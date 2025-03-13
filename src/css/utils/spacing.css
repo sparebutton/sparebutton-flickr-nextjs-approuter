@@ -1,0 +1,27 @@
+@theme {
+    /* spacing */
+    --spacing-text: 44rem;
+    --spacing-media: 56rem;
+    --spacing-page: 96rem;
+
+    /* breakpoint */
+    --breakpoint-2xs: 24rem;
+    --breakpoint-xs: 30rem;
+    --breakpoint-text: 44rem;
+    --breakpoint-media: 56rem;
+    --breakpoint-page: 96rem;
+}
+@layer utilities {
+    .gutter {
+        @apply px-[4vw] lg:px-10;
+    }
+    .gutter .gutter {
+        @apply px-0;
+    }
+    .gutter-l {
+        @apply pl-[4vw] md:pl-10;
+    }
+    .gutter-r {
+        @apply pr-[4vw] md:pr-10;
+    }
+}

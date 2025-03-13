@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+@import "./base/reset.css";
+
+@import "./utils/color.css";
+@import "./utils/keyframes.css";
+@import "./utils/spacing.css";
+@import "./utils/typography.css";
