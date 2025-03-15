@@ -15,9 +15,6 @@ export const metadata: Metadata = {
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="ja">
-            <head>
-                <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-            </head>
             <Body
                 className={`text-text bg-bg min-h-screen ${roboto.variable} ${notoSansJP.variable} font-sans antialiased`}
             >

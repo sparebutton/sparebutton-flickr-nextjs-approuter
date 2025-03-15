@@ -1,6 +1,6 @@
 "use client";
 
-import { useDialogStore } from "@/store/useDialogStore";
+import { useDialogStore } from "@/stores/useDialogStore";
 
 // props
 type BodyProps = {

@@ -56,7 +56,7 @@ export const Header = () => {
                     action="open"
                     className="flex justify-center items-center size-12 text-black"
                 >
-                    <span className="material-icons">menu</span>
+                    <span className="material-symbols-outlined">menu</span>
                 </DialogButton>
             </StickyHeader>
         </>

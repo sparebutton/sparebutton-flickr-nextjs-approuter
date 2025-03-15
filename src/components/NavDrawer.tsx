@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Drawer } from "@/components/ui/Drawer";
 import { DialogButton } from "@/components/ui/DialogButton";
 import { Album } from "@/lib/getAlbums";
-import { useDialogStore } from "@/store/useDialogStore";
+import { useDialogStore } from "@/stores/useDialogStore";
 
 // props
 type NavDrawerProps = {
@@ -26,7 +26,7 @@ export const NavDrawer: React.FC<NavDrawerProps> = ({ albums }) => {
                         action="close"
                         className="flex justify-center items-center size-12 text-black"
                     >
-                        <span className="material-icons">close</span>
+                        <span className="material-symbols-outlined">close</span>
                     </DialogButton>
                 </div>
                 <div className="h-full overflow-y-auto">

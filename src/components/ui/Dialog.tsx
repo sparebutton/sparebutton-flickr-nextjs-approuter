@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useDialogStore } from "@/store/useDialogStore";
+import { useDialogStore } from "@/stores/useDialogStore";
 
 // props
 type DialogProps = {
