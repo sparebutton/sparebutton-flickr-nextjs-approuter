@@ -16,32 +16,39 @@ export const Header = () => {
     // render
     return (
         <>
-            <StickyHeader className="backdrop-blur bg-white/60 flex justify-between items-center h-12">
+            <StickyHeader
+                className="backdrop-blur bg-white/60 flex justify-between items-center h-12"
+                showClassName="shadow-sm"
+            >
                 {isHome ? (
-                    <h1 className="pl-3">
+                    <h1>
                         <Link href="/">
-                            <Image
-                                src="/images/sitename.svg"
-                                alt={Site.name}
-                                width={128}
-                                height={16}
-                                className="h-5 w-auto"
-                                priority={true}
-                            />
+                            <div className="pl-3 flex items-center h-12">
+                                <Image
+                                    src="/images/sitename.svg"
+                                    alt={Site.name}
+                                    width={128}
+                                    height={16}
+                                    className="h-5 w-auto"
+                                    priority={true}
+                                />
+                            </div>
                         </Link>
                     </h1>
                 ) : (
-                    <div className="pl-3">
-                        <Link href="/">
-                            <Image
-                                src="/images/sitename.svg"
-                                alt={Site.name}
-                                width={128}
-                                height={16}
-                                className="h-5 w-auto"
-                                priority={true}
-                            />
-                        </Link>
+                    <div>
+                        <div className="pl-3 flex items-center h-12">
+                            <Link href="/">
+                                <Image
+                                    src="/images/sitename.svg"
+                                    alt={Site.name}
+                                    width={128}
+                                    height={16}
+                                    className="h-5 w-auto"
+                                    priority={true}
+                                />
+                            </Link>
+                        </div>
                     </div>
                 )}
                 <DialogButton
