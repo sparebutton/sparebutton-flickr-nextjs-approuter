@@ -34,8 +34,8 @@ export const Header = () => {
                     </h1>
                 ) : (
                     <div>
-                        <div className="px-3 flex items-center h-12">
-                            <Link href="/">
+                        <Link href="/">
+                            <div className="px-3 flex items-center h-12">
                                 <Image
                                     src="/images/sitename.svg"
                                     alt={Site.name}
@@ -44,8 +44,8 @@ export const Header = () => {
                                     className="h-5 w-auto"
                                     priority={true}
                                 />
-                            </Link>
-                        </div>
+                            </div>
+                        </Link>
                     </div>
                 )}
                 <DialogButton

@@ -17,17 +17,17 @@ export const Drawer: React.FC<DrawerProps> = ({ dialogId, position = "right", cl
             : "mt-0 mr-0 mb-0 ml-auto w-screen h-screen max-h-full";
 
     // animation
-    const openAnimationClassName = "left" === position ? "animate-slide-in-from-left" : "animate-slide-in-from-right";
-    const closeAnimationClassName = "left" === position ? "animate-slide-out-to-left" : "animate-slide-out-to-right";
+    const openAnimationClass = "left" === position ? "animate-slide-in-from-left" : "animate-slide-in-from-right";
+    const closeAnimationClass = "left" === position ? "animate-slide-out-to-left" : "animate-slide-out-to-right";
 
     // render
     return (
         <Dialog
             dialogId={dialogId}
             className={className}
-            position={positionClassName}
-            openAnimation={openAnimationClassName}
-            closeAnimation={closeAnimationClassName}
+            positionClass={positionClassName}
+            openAnimationClass={openAnimationClass}
+            closeAnimationClass={closeAnimationClass}
         >
             {children}
         </Dialog>

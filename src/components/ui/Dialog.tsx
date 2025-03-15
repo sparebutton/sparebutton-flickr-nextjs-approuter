@@ -7,9 +7,9 @@ import { useDialogStore } from "@/store/useDialogStore";
 type DialogProps = {
     dialogId: string;
     className?: string;
-    position?: string;
-    openAnimation?: string;
-    closeAnimation?: string;
+    positionClass?: string;
+    openAnimationClass?: string;
+    closeAnimationClass?: string;
     children?: React.ReactNode;
 };
 
@@ -17,27 +17,14 @@ type DialogProps = {
 export const Dialog: React.FC<DialogProps> = ({
     dialogId,
     className,
-    position,
-    openAnimation,
-    closeAnimation,
+    positionClass = "m-auto",
+    openAnimationClass = "animate-fade-in",
+    closeAnimationClass = "animate-fade-out",
     children,
 }) => {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const isOpen = useDialogStore((state) => state.openDialogs[dialogId]);
     const closeDialog = useDialogStore((state) => state.close);
-
-    // position
-    if (!position) {
-        position = "m-auto";
-    }
-
-    // animation
-    if (!openAnimation) {
-        openAnimation = "animate-fade-in";
-    }
-    if (!closeAnimation) {
-        closeAnimation = "animate-fade-out";
-    }
 
     // 状態に応じてダイアログの開閉を管理
     useEffect(() => {
@@ -53,7 +40,7 @@ export const Dialog: React.FC<DialogProps> = ({
                 dialog.addEventListener(
                     "animationend",
                     (e) => {
-                        if (e.animationName === closeAnimation) dialog.close();
+                        if (e.animationName === closeAnimationClass) dialog.close();
                     },
                     { once: true }
                 );
@@ -104,10 +91,10 @@ export const Dialog: React.FC<DialogProps> = ({
                 text-text bg-bg [&::backdrop]:bg-black/20 [&::backdrop]:backdrop-blur-xs
                 ${
                     isOpen
-                        ? openAnimation + " [&::backdrop]:animate-fade-in"
-                        : closeAnimation + " [&::backdrop]:animate-fade-out"
+                        ? openAnimationClass + " [&::backdrop]:animate-fade-in"
+                        : closeAnimationClass + " [&::backdrop]:animate-fade-out"
                 }
-                ${position} ${className}`}
+                ${positionClass} ${className}`}
             onClick={handleBackdropClick}
         >
             {children}
