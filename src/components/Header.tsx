@@ -4,8 +4,8 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Site } from "@/config/Site";
-import { StickyHeader } from "@/components/StickyHeader";
-import { DialogButton } from "@/components/DialogButton";
+import { StickyHeader } from "@/components/ui/StickyHeader";
+import { DialogButton } from "@/components/ui/DialogButton";
 
 // component
 export const Header = () => {

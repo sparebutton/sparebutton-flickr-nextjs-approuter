@@ -2,9 +2,9 @@
 import type { Metadata } from "next";
 import { Site } from "@/config/Site";
 import "@/css/app.css";
-import { Header } from "@/partials/Header";
-import { Footer } from "@/partials/Footer";
-import { Body } from "@/components/Body";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { Body } from "@/components/ui/Body";
 import { roboto, notoSansJP } from "@/config/Fonts";
 
 export const metadata: Metadata = {

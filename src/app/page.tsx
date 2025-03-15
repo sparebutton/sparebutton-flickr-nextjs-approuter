@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getAlbums } from "@/lib/getAlbums";
 import { Site } from "@/config/Site";
-import { NavDrawer } from "@/partials/NavDrawer";
+import { NavDrawer } from "@/components/NavDrawer";
 import type { Metadata } from "next";
 
 // Meta

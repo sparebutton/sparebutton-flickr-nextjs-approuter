@@ -4,8 +4,8 @@ import { getPhotos, Photo } from "@/lib/getPhotos";
 import Link from "next/link";
 import Image from "next/image";
 import { Site } from "@/config/Site";
-import { NavDrawer } from "@/partials/NavDrawer";
-import { ImageFadein } from "@/components/ImageFadein";
+import { NavDrawer } from "@/components/NavDrawer";
+import { ImageFadein } from "@/components/ui/ImageFadein";
 
 // 明示的に SSG にする
 export const dynamic = "force-static";

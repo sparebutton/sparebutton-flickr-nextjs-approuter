@@ -1,4 +1,4 @@
-import { Dialog } from "@/components/Dialog";
+import { Dialog } from "@/components/ui/Dialog";
 
 // props
 type DrawerProps = {
