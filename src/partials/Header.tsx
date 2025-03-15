@@ -23,7 +23,7 @@ export const Header = () => {
                 {isHome ? (
                     <h1>
                         <Link href="/">
-                            <div className="pl-3 flex items-center h-12">
+                            <div className="px-3 flex items-center h-12">
                                 <Image
                                     src="/images/sitename.svg"
                                     alt={Site.name}
@@ -37,7 +37,7 @@ export const Header = () => {
                     </h1>
                 ) : (
                     <div>
-                        <div className="pl-3 flex items-center h-12">
+                        <div className="px-3 flex items-center h-12">
                             <Link href="/">
                                 <Image
                                     src="/images/sitename.svg"
