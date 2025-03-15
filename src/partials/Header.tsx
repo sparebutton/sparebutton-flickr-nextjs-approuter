@@ -9,7 +9,7 @@ import { DialogButton } from "@/components/DialogButton";
 
 // component
 export const Header = () => {
-    // Homme判定
+    // Home判定
     const pathname = usePathname();
     const isHome = pathname === "/";
 
