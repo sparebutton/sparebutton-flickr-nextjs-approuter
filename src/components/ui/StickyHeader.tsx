@@ -8,19 +8,19 @@ type HeaderState = "reset" | "hide" | "show";
 // props
 type StickyHeaderProps = {
     className?: string;
-    position?: "sticky" | "fixed";
-    reset?: string;
-    hide?: string;
-    show?: string;
+    positionClass?: "sticky" | "fixed";
+    resetClass?: string;
+    hideClass?: string;
+    showClass?: string;
     children: React.ReactNode;
 };
 
 export const StickyHeader: React.FC<StickyHeaderProps> = ({
     className = "",
-    position = "sticky",
-    reset,
-    hide,
-    show,
+    positionClass = "sticky",
+    resetClass,
+    hideClass,
+    showClass,
     children,
 }) => {
     // ヘッダの状態管理
@@ -80,13 +80,17 @@ export const StickyHeader: React.FC<StickyHeaderProps> = ({
 
     // クラスの決定
     const stateClass =
-        state === "hide" ? `-translate-y-full ${hide}` : state === "show" ? `translate-y-0  ${show}` : `${reset}`;
+        state === "hide"
+            ? `-translate-y-full ${hideClass}`
+            : state === "show"
+            ? `translate-y-0  ${showClass}`
+            : `${resetClass}`;
 
     // render
     return (
         <header
             ref={headerRef}
-            className={`${position} z-10 w-full top-0 left-0 transition duration-300 ease-in-out ${stateClass} ${className}`}
+            className={`${positionClass} z-10 w-full top-0 left-0 transition duration-300 ease-in-out ${stateClass} ${className}`}
         >
             {children}
         </header>

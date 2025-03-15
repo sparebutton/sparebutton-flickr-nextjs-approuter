@@ -16,7 +16,10 @@ export const Header = () => {
     // render
     return (
         <>
-            <StickyHeader className="backdrop-blur bg-white/60 flex justify-between items-center h-12" show="shadow-sm">
+            <StickyHeader
+                className="backdrop-blur bg-white/60 flex justify-between items-center h-12"
+                showClass="shadow-sm"
+            >
                 {isHome ? (
                     <h1>
                         <Link href="/">
