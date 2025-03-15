@@ -14,7 +14,7 @@ type NavDrawerProps = {
 
 // component
 export const NavDrawer: React.FC<NavDrawerProps> = ({ albums }) => {
-    const closeDialog = useDialogStore((state) => state.closeDialog);
+    const closeDialog = useDialogStore((state) => state.close);
 
     // render
     return (
@@ -24,7 +24,7 @@ export const NavDrawer: React.FC<NavDrawerProps> = ({ albums }) => {
                     <DialogButton
                         dialogId="drawer"
                         action="close"
-                        className="cursor-pointer flex justify-center items-center size-12 text-black"
+                        className="flex justify-center items-center size-12 text-black"
                     >
                         <span className="material-icons">close</span>
                     </DialogButton>

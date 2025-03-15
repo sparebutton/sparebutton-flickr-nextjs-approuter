@@ -7,9 +7,9 @@ import { useDialogStore } from "@/store/useDialogStore";
 type DialogProps = {
     dialogId: string;
     className?: string;
-    positionClassName?: string;
-    openAnimationClassName?: string;
-    closeAnimationClassName?: string;
+    position?: string;
+    openAnimation?: string;
+    closeAnimation?: string;
     children?: React.ReactNode;
 };
 
@@ -17,26 +17,26 @@ type DialogProps = {
 export const Dialog: React.FC<DialogProps> = ({
     dialogId,
     className,
-    positionClassName,
-    openAnimationClassName,
-    closeAnimationClassName,
+    position,
+    openAnimation,
+    closeAnimation,
     children,
 }) => {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const isOpen = useDialogStore((state) => state.openDialogs[dialogId]);
-    const closeDialog = useDialogStore((state) => state.closeDialog);
+    const closeDialog = useDialogStore((state) => state.close);
 
     // position
-    if (!positionClassName) {
-        positionClassName = "m-auto";
+    if (!position) {
+        position = "m-auto";
     }
 
     // animation
-    if (!openAnimationClassName) {
-        openAnimationClassName = "animate-fade-in";
+    if (!openAnimation) {
+        openAnimation = "animate-fade-in";
     }
-    if (!closeAnimationClassName) {
-        closeAnimationClassName = "animate-fade-out";
+    if (!closeAnimation) {
+        closeAnimation = "animate-fade-out";
     }
 
     // 状態に応じてダイアログの開閉を管理
@@ -53,7 +53,7 @@ export const Dialog: React.FC<DialogProps> = ({
                 dialog.addEventListener(
                     "animationend",
                     (e) => {
-                        if (e.animationName === closeAnimationClassName) dialog.close();
+                        if (e.animationName === closeAnimation) dialog.close();
                     },
                     { once: true }
                 );
@@ -104,10 +104,10 @@ export const Dialog: React.FC<DialogProps> = ({
                 text-text bg-bg [&::backdrop]:bg-black/20 [&::backdrop]:backdrop-blur-xs
                 ${
                     isOpen
-                        ? openAnimationClassName + " [&::backdrop]:animate-fade-in"
-                        : closeAnimationClassName + " [&::backdrop]:animate-fade-out"
+                        ? openAnimation + " [&::backdrop]:animate-fade-in"
+                        : closeAnimation + " [&::backdrop]:animate-fade-out"
                 }
-                ${positionClassName} ${className}`}
+                ${position} ${className}`}
             onClick={handleBackdropClick}
         >
             {children}

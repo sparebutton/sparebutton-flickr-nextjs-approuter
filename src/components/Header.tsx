@@ -16,10 +16,7 @@ export const Header = () => {
     // render
     return (
         <>
-            <StickyHeader
-                className="backdrop-blur bg-white/60 flex justify-between items-center h-12"
-                showClassName="shadow-sm"
-            >
+            <StickyHeader className="backdrop-blur bg-white/60 flex justify-between items-center h-12" show="shadow-sm">
                 {isHome ? (
                     <h1>
                         <Link href="/">
@@ -54,7 +51,7 @@ export const Header = () => {
                 <DialogButton
                     dialogId="drawer"
                     action="open"
-                    className="cursor-pointer flex justify-center items-center size-12 text-black"
+                    className="flex justify-center items-center size-12 text-black"
                 >
                     <span className="material-icons">menu</span>
                 </DialogButton>

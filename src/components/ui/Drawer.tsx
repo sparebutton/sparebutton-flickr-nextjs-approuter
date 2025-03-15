@@ -25,9 +25,9 @@ export const Drawer: React.FC<DrawerProps> = ({ dialogId, position = "right", cl
         <Dialog
             dialogId={dialogId}
             className={className}
-            positionClassName={positionClassName}
-            openAnimationClassName={openAnimationClassName}
-            closeAnimationClassName={closeAnimationClassName}
+            position={positionClassName}
+            openAnimation={openAnimationClassName}
+            closeAnimation={closeAnimationClassName}
         >
             {children}
         </Dialog>

@@ -12,8 +12,8 @@ type DialogButtonProps = {
 
 // component
 export const DialogButton: React.FC<DialogButtonProps> = ({ dialogId, className, action, children }) => {
-    const openDialog = useDialogStore((state) => state.openDialog);
-    const closeDialog = useDialogStore((state) => state.closeDialog);
+    const openDialog = useDialogStore((state) => state.open);
+    const closeDialog = useDialogStore((state) => state.close);
 
     const handleClick = () => {
         if ("open" === action) {
