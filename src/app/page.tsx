@@ -16,7 +16,7 @@ export const metadata: Metadata = {
         siteName: Site.name,
         images: [
             {
-                url: Site.ogImage, // OGP 画像
+                url: Site.ogImage,
                 width: 1200,
                 height: 630,
                 alt: Site.name,
