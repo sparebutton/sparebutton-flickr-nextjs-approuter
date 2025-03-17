@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { getAlbums } from "@/lib/getAlbums";
-import { getPhotos, Photo } from "@/lib/getPhotos";
+import { useFetchAlbums } from "@/hooks/useFetchAlbums";
+import { useFetchPhotos, Photo } from "@/hooks/useFetchPhotos";
 import Link from "next/link";
 import Image from "next/image";
 import { Site } from "@/config/Site";
@@ -12,7 +12,7 @@ export const dynamic = "force-static";
 
 // SSG: アルバムごとのページを事前にビルド
 export async function generateStaticParams() {
-    const albums = await getAlbums();
+    const albums = await useFetchAlbums();
     return albums.map((album) => ({
         albumId: album.id.toString(),
     }));
@@ -21,7 +21,7 @@ export async function generateStaticParams() {
 // Meta
 export async function generateMetadata({ params }: { params: Promise<{ albumId: string }> }) {
     const albumId = (await params).albumId;
-    const albums = await getAlbums();
+    const albums = await useFetchAlbums();
     const album = albums.find((a) => a.id === albumId);
 
     if (!album) {
@@ -53,14 +53,14 @@ export async function generateMetadata({ params }: { params: Promise<{ albumId: 
 // component
 export default async function AlbumPage({ params }: { params: Promise<{ albumId: string }> }) {
     const albumId = (await params).albumId;
-    const albums = await getAlbums();
+    const albums = await useFetchAlbums();
     const album = albums.find((a) => a.id === albumId);
 
     // アルバムが見つからない場合は 404 ページ
     if (!album) return notFound();
 
     // `getPhotos()` を使ってアルバムの写真を取得
-    const photos: Photo[] = await getPhotos(albumId);
+    const photos: Photo[] = await useFetchPhotos(albumId);
 
     // render
     return (

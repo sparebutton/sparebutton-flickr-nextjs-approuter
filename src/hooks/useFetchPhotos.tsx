@@ -31,7 +31,7 @@ const fetchJSON = async (url: string) => {
 };
 
 // アルバム内のすべての写真を取得
-export async function getPhotos(albumId: string): Promise<Photo[]> {
+export async function useFetchPhotos(albumId: string): Promise<Photo[]> {
     // すでにキャッシュされている場合、それを返す
     if (globalThis.__photosCache?.[albumId]) {
         return globalThis.__photosCache[albumId];

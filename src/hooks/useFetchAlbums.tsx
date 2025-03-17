@@ -29,7 +29,8 @@ const fetchJSON = async (url: string) => {
     return res.json();
 };
 
-export async function getAlbums(): Promise<Album[]> {
+// コレクションからすべてのアルバム情報を取得
+export async function useFetchAlbums(): Promise<Album[]> {
     // すでにキャッシュされている場合、それを返す
     if (globalThis.__albumsCache) {
         return globalThis.__albumsCache;
