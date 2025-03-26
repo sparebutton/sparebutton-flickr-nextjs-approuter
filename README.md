@@ -40,7 +40,3 @@ yarn start
 ### Deployment
 
 Simply create a Vercel project from this repo, configure environment variables, and click Deploy!
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
