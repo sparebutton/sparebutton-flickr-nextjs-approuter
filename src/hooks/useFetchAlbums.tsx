@@ -1,10 +1,4 @@
-export type Album = {
-    id: string;
-    title: string;
-    description: string;
-    thumbnail: string;
-    ogImage: string;
-};
+import { Album } from "@/types/flickr";
 
 const API_KEY = process.env.FLICKR_API_KEY;
 const USER_ID = process.env.FLICKR_USER_ID;
@@ -52,7 +46,6 @@ export async function useFetchAlbums(): Promise<Album[]> {
             const albumId = album.id;
             const albumTitle = album.title || "Untitled Album";
             const albumDescription = album.description || "";
-
             // アルバムの代表画像を取得
             const albumData = await fetchJSON(
                 `https://www.flickr.com/services/rest/?method=flickr.photosets.getInfo&api_key=${API_KEY}&photoset_id=${albumId}&user_id=${USER_ID}&format=json&nojsoncallback=1`

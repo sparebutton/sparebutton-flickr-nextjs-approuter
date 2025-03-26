@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Drawer } from "@/components/ui/Drawer";
 import { DialogButton } from "@/components/ui/DialogButton";
-import { Album } from "@/hooks/useFetchAlbums";
+import { Album } from "@/types/flickr";
 import { useDialogStore } from "@/stores/useDialogStore";
 
 // props

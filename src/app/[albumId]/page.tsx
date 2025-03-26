@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { useFetchAlbums } from "@/hooks/useFetchAlbums";
-import { useFetchPhotos, Photo } from "@/hooks/useFetchPhotos";
+import { useFetchPhotos } from "@/hooks/useFetchPhotos";
+import { Photo } from "@/types/flickr";
 import Link from "next/link";
 import Image from "next/image";
 import { Site } from "@/config/Site";

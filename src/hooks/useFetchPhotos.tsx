@@ -1,12 +1,4 @@
-export type Photo = {
-    id: string;
-    title: string;
-    imageUrl: string;
-    description?: string;
-    isVideo: boolean;
-    originalImageUrl: string;
-    originalVideoUrl: string | null;
-};
+import { Photo } from "@/types/flickr";
 
 const API_KEY = process.env.FLICKR_API_KEY;
 const USER_ID = process.env.FLICKR_USER_ID;
