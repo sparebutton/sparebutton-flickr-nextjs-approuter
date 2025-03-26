@@ -1,4 +1,5 @@
 import { Album } from "@/types/flickr";
+import { fetchJSON } from "@/lib/fetchJSON";
 
 const API_KEY = process.env.FLICKR_API_KEY;
 const USER_ID = process.env.FLICKR_USER_ID;
@@ -12,16 +13,6 @@ declare global {
 if (!globalThis.__albumsCache) {
     globalThis.__albumsCache = null;
 }
-
-// APIリクエストの共通処理
-const fetchJSON = async (url: string) => {
-    const res = await fetch(url, { cache: "force-cache" }); // SSG向け完全静的化
-    if (!res.ok) {
-        console.error(`Flickr API Error: Failed to fetch ${url}`);
-        return null;
-    }
-    return res.json();
-};
 
 // コレクションからすべてのアルバム情報を取得
 export async function useFetchAlbums(): Promise<Album[]> {
