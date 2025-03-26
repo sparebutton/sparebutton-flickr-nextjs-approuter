@@ -17,9 +17,9 @@ This is a Next.js project for **SPAREBUTTON (https://www.sparebutton.jp)**, usin
 Set the following environment variables (in Vercel Project Settings or .env):
 
 ```
-NUXT_PUBLIC_FLICKR_API_KEY=xxxxxxx
-NUXT_PUBLIC_FLICKR_USER_ID=xxxxxxx
-NUXT_PUBLIC_FLICKR_COLLECTION_ID=xxxxxxx
+FLICKR_API_KEY=xxxxxxx
+FLICKR_USER_ID=xxxxxxx
+FLICKR_COLLECTION_ID=xxxxxxx
 ```
 
 ### Setup & Development
