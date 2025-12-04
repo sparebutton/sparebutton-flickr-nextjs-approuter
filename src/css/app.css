@@ -1,0 +1,8 @@
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=swap");
+@import "tailwindcss";
+
+@import "./base/reset.css";
+
+@import "./utils/color.css";
+@import "./utils/keyframes.css";
+@import "./utils/spacing.css";

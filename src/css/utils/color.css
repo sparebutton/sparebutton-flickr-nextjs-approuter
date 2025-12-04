@@ -1,0 +1,41 @@
+/*
+ * tailwindcss Colors
+ * https://tailwindcss.com/docs/customizing-colors
+*/
+@theme {
+    /* basic */
+    --color-red: var(--color-red-600);
+    --color-orange: var(--color-orange-500);
+    --color-yellow: var(--color-yellow-500);
+    --color-green: var(--color-lime-500);
+    --color-blue: var(--color-blue-500);
+    --color-purple: var(--color-purple-500);
+    --color-pink: var(--color-pink-500);
+    /* functional */
+    --color-bg: var(--color-white);
+    --color-text: var(--color-neutral-900);
+    --color-primary: var(--color-red-600);
+    --color-on-primary: var(--color-white);
+    --color-secondary: var(--color-neutral-400);
+    --color-on-secondary: var(--color-white);
+    --color-note: var(--color-amber-50);
+    --color-border: var(--color-neutral-200);
+    --color-link: var(--color-blue-500);
+    --color-link-hover: color-mix(in srgb, var(--color-link), black 10%);
+    --color-on-link: var(--color-white);
+    --color-image: var(--color-border);
+}
+@layer base {
+    body {
+        @apply bg-bg;
+    }
+    main {
+        @apply text-text;
+    }
+    a {
+        @apply text-link;
+    }
+    a:hover {
+        @apply text-link-hover;
+    }
+}

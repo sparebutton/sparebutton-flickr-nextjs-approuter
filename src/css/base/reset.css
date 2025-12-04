@@ -1,0 +1,11 @@
+@layer base {
+    *:focus {
+        @apply outline-none focus:ring-0;
+    }
+    button {
+        @apply cursor-pointer;
+    }
+    iframe {
+        @apply w-full;
+    }
+}
