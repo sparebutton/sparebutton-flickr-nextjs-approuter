@@ -42,7 +42,3 @@ next-env.d.ts
 
 # Local Netlify folder
 .netlify
-
-# Package backup
-package.json.bak
-yarn.lock.bak
