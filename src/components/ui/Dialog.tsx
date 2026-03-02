@@ -46,7 +46,7 @@ export const Dialog: React.FC<DialogProps> = ({
                 );
             }
         }
-    }, [isOpen]);
+    }, [isOpen, dialogId, closeAnimationClass]);
 
     // バックドロップクリックでダイアログを閉じる
     const handleBackdropClick = (event: React.MouseEvent<HTMLDialogElement>) => {
@@ -88,11 +88,11 @@ export const Dialog: React.FC<DialogProps> = ({
             ref={dialogRef}
             id={dialogId}
             className={`
-                text-text bg-bg [&::backdrop]:bg-black/20 [&::backdrop]:backdrop-blur-xs
+                text-text bg-bg backdrop:bg-black/20 backdrop:backdrop-blur-xs
                 ${
                     isOpen
-                        ? openAnimationClass + " [&::backdrop]:animate-fade-in"
-                        : closeAnimationClass + " [&::backdrop]:animate-fade-out"
+                        ? openAnimationClass + " backdrop:animate-fade-in"
+                        : closeAnimationClass + " backdrop:animate-fade-out"
                 }
                 ${positionClass} ${className}`}
             onClick={handleBackdropClick}

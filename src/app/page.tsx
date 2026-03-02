@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { useFetchAlbums } from "@/hooks/useFetchAlbums";
+import { fetchAlbums } from "@/lib/fetchAlbums";
 import { Site } from "@/config/Site";
 import { NavDrawer } from "@/components/NavDrawer";
 import type { Metadata } from "next";
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 
 // component
 export default async function Home() {
-    const albums = await useFetchAlbums();
+    const albums = await fetchAlbums();
 
     // render
     return (

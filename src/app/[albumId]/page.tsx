@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
-import { useFetchAlbums } from "@/hooks/useFetchAlbums";
-import { useFetchPhotos } from "@/hooks/useFetchPhotos";
+import { fetchAlbums } from "@/lib/fetchAlbums";
+import { fetchPhotos } from "@/lib/fetchPhotos";
+import { formatDescription, stripHtml } from "@/lib/sanitizeHtml";
 import { Photo } from "@/types/flickr";
 import Link from "next/link";
 import Image from "next/image";
@@ -13,7 +14,7 @@ export const dynamic = "force-static";
 
 // SSG: アルバムごとのページを事前にビルド
 export async function generateStaticParams() {
-    const albums = await useFetchAlbums();
+    const albums = await fetchAlbums();
     return albums.map((album) => ({
         albumId: album.id.toString(),
     }));
@@ -22,22 +23,21 @@ export async function generateStaticParams() {
 // Meta
 export async function generateMetadata({ params }: { params: Promise<{ albumId: string }> }) {
     const albumId = (await params).albumId;
-    const albums = await useFetchAlbums();
+    const albums = await fetchAlbums();
     const album = albums.find((a) => a.id === albumId);
 
     if (!album) {
         return { title: "Not Found", description: "アルバムが見つかりませんでした。" };
     }
 
-    // description をサニタイズ（HTMLタグ除去、改行コードを半角スペースに）
-    const sanitizeDescription = album.description.replace(/<[^>]*>?/gm, "").replace(/\n/g, " ");
+    const sanitizedDescription = stripHtml(album.description);
 
     return {
         title: `${album.title} | ${Site.name}`,
-        description: sanitizeDescription,
+        description: sanitizedDescription,
         openGraph: {
             title: `${album.title} | ${Site.name}`,
-            description: sanitizeDescription,
+            description: sanitizedDescription,
             url: `${Site.url}/${album.id}`,
             siteName: Site.name,
             images: [
@@ -54,14 +54,14 @@ export async function generateMetadata({ params }: { params: Promise<{ albumId: 
 // component
 export default async function AlbumPage({ params }: { params: Promise<{ albumId: string }> }) {
     const albumId = (await params).albumId;
-    const albums = await useFetchAlbums();
+    const albums = await fetchAlbums();
     const album = albums.find((a) => a.id === albumId);
 
     // アルバムが見つからない場合は 404 ページ
     if (!album) return notFound();
 
-    // `getPhotos()` を使ってアルバムの写真を取得
-    const photos: Photo[] = await useFetchPhotos(albumId);
+    // `fetchPhotos()` を使ってアルバムの写真を取得
+    const photos: Photo[] = await fetchPhotos(albumId);
 
     // render
     return (
@@ -69,13 +69,11 @@ export default async function AlbumPage({ params }: { params: Promise<{ albumId:
             <NavDrawer albums={albums} />
             <main className="px-3">
                 <article className="max-w-screen-sm mx-auto">
-                    <h1 className="mt-20 mb-10 text-lg !font-bold">{album.title}</h1>
+                    <h1 className="mt-20 mb-10 text-lg font-bold!">{album.title}</h1>
                     <div
                         className="text-sm leading-relaxed"
                         dangerouslySetInnerHTML={{
-                            __html: album.description
-                                .replace(/\n/g, "<br>")
-                                .replace(/href="https?/g, 'target="_blank" href="https'),
+                            __html: formatDescription(album.description),
                         }}
                     />
 
@@ -114,9 +112,7 @@ export default async function AlbumPage({ params }: { params: Promise<{ albumId:
                                     className="mt-3 text-xs leading-relaxed"
                                     dangerouslySetInnerHTML={{
                                         __html: photo.description
-                                            ? photo.description
-                                                  .replace(/\n/g, "<br>")
-                                                  .replace(/href="https?/g, 'target="_blank" href="https')
+                                            ? formatDescription(photo.description)
                                             : "",
                                     }}
                                 />

@@ -6,11 +6,11 @@ This is a Next.js project for **SPAREBUTTON (https://www.sparebutton.jp)**, usin
 
 ### Features
 
--   **Flickr Collection**:  
-    https://www.flickr.com/photos/sparebutton/collections/72157648570602034/
--   **Static Site Generation (SSG)**: Builds album data at compile time
--   **Deployed on Vercel**: GitHub integration
--   **TypeScript** support
+- **Flickr Collection**:  
+  https://www.flickr.com/photos/sparebutton/collections/72157648570602034/
+- **Static Site Generation (SSG)**: Builds album data at compile time
+- **Deployed on Vercel**: GitHub integration
+- **TypeScript** support
 
 ### Environment Variables
 

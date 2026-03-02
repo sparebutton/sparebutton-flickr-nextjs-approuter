@@ -1,8 +1,6 @@
 import { Photo } from "@/types/flickr";
 import { fetchJSON } from "@/lib/fetchJSON";
-
-const API_KEY = process.env.FLICKR_API_KEY;
-const USER_ID = process.env.FLICKR_USER_ID;
+import { buildFlickrUrl, USER_ID } from "@/lib/flickrApi";
 
 // メモリキャッシュを作成（SSGビルド時のみ保持）
 declare global {
@@ -14,15 +12,23 @@ if (!globalThis.__photosCache) {
 }
 
 // アルバム内のすべての写真を取得
-export async function useFetchPhotos(albumId: string): Promise<Photo[]> {
+export async function fetchPhotos(albumId: string): Promise<Photo[]> {
     // すでにキャッシュされている場合、それを返す
     if (globalThis.__photosCache?.[albumId]) {
         return globalThis.__photosCache[albumId];
     }
 
     // `flickr.photosets.getPhotos` でアルバムの写真リストを取得
-    const photosData = await fetchJSON(
-        `https://www.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=${API_KEY}&photoset_id=${albumId}&user_id=${USER_ID}&format=json&nojsoncallback=1&extras=title,description,url_l,media`
+    const photosData = await fetchJSON<{
+        photoset?: {
+            photo?: Array<{ id: string; title: string; server: string; secret: string }>;
+        };
+    }>(
+        buildFlickrUrl("flickr.photosets.getPhotos", {
+            photoset_id: albumId,
+            user_id: USER_ID || "",
+            extras: "title,description,url_l,media",
+        })
     );
 
     if (!photosData?.photoset?.photo) {
@@ -32,9 +38,17 @@ export async function useFetchPhotos(albumId: string): Promise<Photo[]> {
 
     // 各写真の詳細情報を取得
     const photos: Photo[] = await Promise.all(
-        photosData.photoset.photo.map(async (photo: any) => {
-            const photoData = await fetchJSON(
-                `https://www.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=${API_KEY}&photo_id=${photo.id}&format=json&nojsoncallback=1`
+        photosData.photoset.photo.map(async (photo) => {
+            const photoData = await fetchJSON<{
+                photo?: {
+                    description?: { _content?: string };
+                    media?: string;
+                    originalsecret?: string;
+                };
+            }>(
+                buildFlickrUrl("flickr.photos.getInfo", {
+                    photo_id: photo.id,
+                })
             );
 
             return {

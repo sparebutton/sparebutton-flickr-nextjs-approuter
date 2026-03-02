@@ -12,6 +12,7 @@ export const Header = () => {
     // Home判定
     const pathname = usePathname();
     const isHome = pathname === "/";
+    const Tag = isHome ? "h1" : "div";
 
     // render
     return (
@@ -20,37 +21,20 @@ export const Header = () => {
                 className="backdrop-blur bg-white/60 flex justify-between items-center h-12"
                 showClass="shadow-sm"
             >
-                {isHome ? (
-                    <h1>
-                        <Link href="/">
-                            <div className="px-3 flex items-center h-12">
-                                <Image
-                                    src="/images/sitename.svg"
-                                    alt={Site.name_jp}
-                                    width={128}
-                                    height={16}
-                                    className="h-5 w-auto"
-                                    priority={true}
-                                />
-                            </div>
-                        </Link>
-                    </h1>
-                ) : (
-                    <div>
-                        <Link href="/">
-                            <div className="px-3 flex items-center h-12">
-                                <Image
-                                    src="/images/sitename.svg"
-                                    alt={Site.name_jp}
-                                    width={128}
-                                    height={16}
-                                    className="h-5 w-auto"
-                                    priority={true}
-                                />
-                            </div>
-                        </Link>
-                    </div>
-                )}
+                <Tag>
+                    <Link href="/">
+                        <div className="px-3 flex items-center h-12">
+                            <Image
+                                src="/images/sitename.svg"
+                                alt={Site.name_jp}
+                                width={128}
+                                height={16}
+                                className="h-5 w-auto"
+                                priority={true}
+                            />
+                        </div>
+                    </Link>
+                </Tag>
                 <DialogButton
                     dialogId="drawer"
                     action="open"

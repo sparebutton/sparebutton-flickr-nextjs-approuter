@@ -25,7 +25,7 @@ export const ImageFadein: React.FC<ImageFadeinProps> = ({ src, alt, width, heigh
                 width={width}
                 height={height}
                 className={`transition-opacity ${isLoaded ? "opacity-100" : "opacity-0"} ${className}`}
-                onLoadingComplete={() => setIsLoaded(true)}
+                onLoad={() => setIsLoaded(true)}
             />
         </div>
     );

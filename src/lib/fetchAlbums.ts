@@ -1,9 +1,6 @@
 import { Album } from "@/types/flickr";
 import { fetchJSON } from "@/lib/fetchJSON";
-
-const API_KEY = process.env.FLICKR_API_KEY;
-const USER_ID = process.env.FLICKR_USER_ID;
-const COLLECTION_ID = process.env.FLICKR_COLLECTION_ID;
+import { buildFlickrUrl, USER_ID, COLLECTION_ID } from "@/lib/flickrApi";
 
 // メモリキャッシュを作成（SSGビルド時のみ保持）
 declare global {
@@ -15,15 +12,18 @@ if (!globalThis.__albumsCache) {
 }
 
 // コレクションからすべてのアルバム情報を取得
-export async function useFetchAlbums(): Promise<Album[]> {
+export async function fetchAlbums(): Promise<Album[]> {
     // すでにキャッシュされている場合、それを返す
     if (globalThis.__albumsCache) {
         return globalThis.__albumsCache;
     }
 
     // コレクション情報を取得
-    const data = await fetchJSON(
-        `https://www.flickr.com/services/rest/?method=flickr.collections.getTree&api_key=${API_KEY}&user_id=${USER_ID}&collection_id=${COLLECTION_ID}&format=json&nojsoncallback=1`
+    const data = await fetchJSON<{ collections?: { collection?: Array<{ set?: Array<{ id: string; title: string; description: string }> }> } }>(
+        buildFlickrUrl("flickr.collections.getTree", {
+            user_id: USER_ID || "",
+            collection_id: COLLECTION_ID || "",
+        })
     );
 
     if (!data?.collections?.collection) {
@@ -33,13 +33,16 @@ export async function useFetchAlbums(): Promise<Album[]> {
 
     // 各アルバムの情報を取得（並列リクエスト、エラー時のフォールバックあり）
     const albums: PromiseSettledResult<Album>[] = await Promise.allSettled(
-        (data.collections.collection[0]?.set || []).map(async (album: any) => {
+        (data.collections.collection[0]?.set || []).map(async (album) => {
             const albumId = album.id;
             const albumTitle = album.title || "Untitled Album";
             const albumDescription = album.description || "";
             // アルバムの代表画像を取得
-            const albumData = await fetchJSON(
-                `https://www.flickr.com/services/rest/?method=flickr.photosets.getInfo&api_key=${API_KEY}&photoset_id=${albumId}&user_id=${USER_ID}&format=json&nojsoncallback=1`
+            const albumData = await fetchJSON<{ photoset?: { primary: string; server: string; secret: string } }>(
+                buildFlickrUrl("flickr.photosets.getInfo", {
+                    photoset_id: albumId,
+                    user_id: USER_ID || "",
+                })
             );
 
             if (!albumData?.photoset) {
