@@ -40,3 +40,10 @@ yarn start
 ### Deployment
 
 Simply create a Vercel project from this repo, configure environment variables, and click Deploy!
+
+## 📁 Documentation
+
+| File | Purpose |
+|---|---|
+| [CLAUDE.md](CLAUDE.md) | Index and project-specific rules for Claude Code |
+| [CHANGELOG.md](CHANGELOG.md) | Change history |
