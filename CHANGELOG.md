@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.2] - 2026-05-21
+
+### Changed
+
+- `package.json` の `resolutions` に `brace-expansion: ^1.1.13` を追加（実体: 1.1.14）
+  - `serve → serve-handler → minimatch → brace-expansion` 経由の Zero-step sequence による DoS (CVE-2026-33750, Moderate) 対応
+  - `minimatch` 3.x が `^1.1.7` を要求するため 1.1.x ラインで固定（メジャー 5.x 跨ぎは互換性リスクあり）
+  - `serve` 系列は devDep のため実害なし
+
 ## [0.2.1] - 2026-05-21
 
 ### Changed
