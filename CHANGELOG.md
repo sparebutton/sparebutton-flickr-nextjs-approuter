@@ -7,6 +7,9 @@
 - `next` を 16.1.6 → 16.2.6 にアップグレード（GitHub Dependabot alerts 対応）
   - 対象 CVE: WebSocket upgrade 経由の SSRF、Middleware/Proxy バイパス、Cache Components の DoS など
   - 本プロジェクトは `output: "export"` の SSG 構成で Vercel ホスティングのため本番への実害はないが、アラート消化のため追従
+- `package.json` の `resolutions` で transitive 依存を強制更新
+  - `minimatch` を `^3.1.3` に固定（実体: 3.1.5）— `serve` 経由の ReDoS (GHSA, High) 対応。`serve` はローカルプレビュー専用 devDep のため実害なし
+  - `postcss` を `^8.5.10` に固定（実体: 8.5.15）— `next` 経由の XSS via `</style>` (CVE-2026-41305, Moderate) 対応。SSG ビルド時にユーザー入力 CSS を扱わないため実害なし
 
 ## [0.2.0] - 2026-03-02
 
