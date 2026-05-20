@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1] - 2026-05-21
+
+### Changed
+
+- `next` を 16.1.6 → 16.2.6 にアップグレード（GitHub Dependabot alerts 対応）
+  - 対象 CVE: WebSocket upgrade 経由の SSRF、Middleware/Proxy バイパス、Cache Components の DoS など
+  - 本プロジェクトは `output: "export"` の SSG 構成で Vercel ホスティングのため本番への実害はないが、アラート消化のため追従
+
 ## [0.2.0] - 2026-03-02
 
 ### Refactored
