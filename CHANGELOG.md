@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.7] - 2026-08-07
+
+### Fixed
+
+- `yarn lint` が動作しなかった問題を修正（Next 16 で `next lint` が削除されているため `Invalid project directory provided, no such directory: .../lint` で失敗していた）
+  - ESLint 9 + `eslint-config-next` 16.2.11 を devDependencies に追加し、[eslint.config.mjs](eslint.config.mjs)（flat config）を新規作成。`lint` スクリプトを `eslint .` に変更
+  - `eslint-config-next` は flat config の配列をそのまま export しているため `@eslint/eslintrc` の FlatCompat は不要
+  - ビルド成果物（`.next` / `out` / `.vercel` / `.netlify` 等）を `ignores` に指定。指定前は書き出し済み JS を走査して 2655 件を報告していた
+  - 検出された警告 1 件を修正: [useDialogStore.ts](src/stores/useDialogStore.ts) の未使用引数 `get` を削除
+  - 現在の検出結果は 0 件（error / warning とも）
+
 ## [0.2.6] - 2026-08-07
 
 ### Changed

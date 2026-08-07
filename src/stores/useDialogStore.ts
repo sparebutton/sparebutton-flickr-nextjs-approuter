@@ -7,7 +7,7 @@ type DialogStore = {
     close: (dialogId: string) => void;
 };
 
-export const useDialogStore = create<DialogStore>((set, get) => ({
+export const useDialogStore = create<DialogStore>((set) => ({
     openDialogs: {},
     isOpen: false, // 初期状態は false
 

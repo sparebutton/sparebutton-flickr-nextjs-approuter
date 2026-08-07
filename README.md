@@ -35,6 +35,9 @@ yarn dev
 # Production build (SSG)
 yarn build
 yarn start
+
+# Lint
+yarn lint
 ```
 
 ### Deployment
