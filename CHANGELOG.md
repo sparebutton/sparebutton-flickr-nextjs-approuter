@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.5] - 2026-08-07
+
+### Added
+
+- `.github/workflows/purge-cloudflare-cache.yml` — 本番デプロイ完了時に Cloudflare のキャッシュを自動パージする GitHub Actions
+  - Cloudflare 側に Cache Rule「Cache HTML (SSG)」を追加し、HTML をエッジに 1 時間キャッシュするようにしたため（従来は `cf-cache-status: DYNAMIC` で HTML が一切キャッシュされず、ゾーンのヒット率は 3.44% だった）
+  - トリガーは `deployment_status`。`on: push` では Vercel のビルド完了前にパージが走り旧コンテンツを再キャッシュするだけになるため、Vercel が作成する GitHub Deployment の status が `success`（environment = `Production`）になるのを待つ
+  - 必要な Secrets: `CLOUDFLARE_API_TOKEN`（ゾーン → キャッシュ パージ → パージ）、`CLOUDFLARE_ZONE_ID`
+  - 手動実行用に `workflow_dispatch` も有効
+- `.claude/memory/cloudflare-cache-and-purge.md` — キャッシュルールの各設定値を選んだ理由、パージ運用、Speed Brain の 503 挙動を記録
+
 ## [0.2.4] - 2026-08-07
 
 ### Changed

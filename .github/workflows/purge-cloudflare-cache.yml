@@ -1,0 +1,52 @@
+name: Purge Cloudflare cache
+
+# Cloudflare の Cache Rule "Cache HTML (SSG)" が HTML をエッジに 1 時間キャッシュするため、
+# 本番デプロイのたびにパージしないと最大 1 時間は旧コンテンツが配信される。
+#
+# push をトリガーにすると Vercel のビルド完了前にパージしてしまい、旧コンテンツを
+# 再キャッシュするだけになる。そのため Vercel が作成する GitHub Deployment の
+# status が success になったタイミング（= 本番反映完了）をトリガーにしている。
+on:
+  deployment_status:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  purge:
+    # Preview デプロイと、success 以外の status（pending / failure 等）は対象外
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.deployment_status.state == 'success' &&
+       github.event.deployment.environment == 'Production')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Purge everything
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${CF_API_TOKEN}" ] || [ -z "${CF_ZONE_ID}" ]; then
+            echo "::error::CLOUDFLARE_API_TOKEN / CLOUDFLARE_ZONE_ID が未設定です。リポジトリの Settings → Secrets and variables → Actions で登録してください"
+            exit 1
+          fi
+
+          response=$(curl -sS -w $'\n%{http_code}' -X POST \
+            "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/purge_cache" \
+            -H "Authorization: Bearer ${CF_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}')
+
+          code=$(printf '%s' "${response}" | tail -n 1)
+          body=$(printf '%s' "${response}" | sed '$d')
+          echo "HTTP ${code}: ${body}"
+
+          if [ "${code}" != "200" ] || ! printf '%s' "${body}" | grep -q '"success":true'; then
+            echo "::error::Cloudflare のキャッシュパージに失敗しました"
+            exit 1
+          fi
+
+          echo "Cloudflare のキャッシュをパージしました (${{ github.sha }})"
