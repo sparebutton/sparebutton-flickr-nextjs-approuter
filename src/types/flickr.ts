@@ -9,9 +9,9 @@ export type Album = {
 export type Photo = {
     id: string;
     title: string;
-    imageUrl: string;
     description?: string;
     isVideo: boolean;
-    originalImageUrl: string;
+    /** 表示用の画像 URL。動画の場合はポスター画像として使う */
+    imageUrl: string;
     originalVideoUrl: string | null;
 };

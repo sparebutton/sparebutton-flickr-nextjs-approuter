@@ -11,6 +11,22 @@
   - 検出された警告 1 件を修正: [useDialogStore.ts](src/stores/useDialogStore.ts) の未使用引数 `get` を削除
   - 現在の検出結果は 0 件（error / warning とも）
 
+### Changed
+
+- 表示に使う画像を、写真ごとに適正なサイズへ切り替え（[fetchPhotos.ts](src/lib/fetchPhotos.ts)）
+  - 従来は常に原寸（`_o`）を配信しており、記事の最大幅 640px に対して最大 2618px の画像を送っていた
+  - Flickr の派生サイズは**長辺**基準で縮小されるため、長辺で選ぶと縦長写真の幅が不足する（680×13600 のスクロールポスターは長辺 1600px 版だと 80×1600 になる）。そこで **幅**を基準に、`MIN_WIDTH`（1280px = 記事幅 640px の 2 倍）以上を保てる最小の派生サイズを選び、該当が無ければ原寸を使う `pickImageUrl()` を追加
+  - 画像 URL はサイズごとに secret が異なり組み立てられないため、`extras` で受け取った `url_*` をそのまま使う。これにより `originalsecret` からの URL 組み立てと `.jpg` 決め打ちも不要になった
+  - 結果: 716 枚中 27 枚が縮小（1920×1080 → 1600px 等）、689 枚は原寸のまま、**幅が不足するものは 0 枚**。実バイト例: 2618×2368 の写真で 684KB → 277KB（−60%）
+  - 型 `Photo` の `originalImageUrl` を `imageUrl` にリネームし、未使用だった旧 `imageUrl`（`_q` サムネイル）を削除
+
+### Notes
+
+- `flickr.photosets.getPhotos` の `extras=description` は `flickr.photos.getInfo` の値と一致しないため採用を見送った（写真ごとの getInfo 呼び出しを 716 回削減できるはずだった）
+  - 全文字の間に U+200B（ゼロ幅スペース）が挿入される写真がある（32 件中 3 件）
+  - 外部リンクの `rel` 属性が異なる（`nofollow` / `noreferrer nofollow`、32 件中 8 件）
+  - 検証: 書き出し 33 ページのテキストが本番と完全一致、U+200B は 0 件
+
 ## [0.2.6] - 2026-08-07
 
 ### Changed

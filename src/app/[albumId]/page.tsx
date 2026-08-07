@@ -84,14 +84,14 @@ export default async function AlbumPage({ params }: { params: Promise<{ albumId:
                                 {photo.isVideo ? (
                                     <video
                                         controls
-                                        poster={photo.originalImageUrl}
+                                        poster={photo.imageUrl}
                                         className="w-full h-auto rounded-xl"
                                     >
                                         <source src={photo.originalVideoUrl || undefined} type="video/mp4" />
                                     </video>
                                 ) : index < 2 ? (
                                     <Image
-                                        src={photo.originalImageUrl}
+                                        src={photo.imageUrl}
                                         alt={photo.title}
                                         width={800}
                                         height={800}
@@ -100,7 +100,7 @@ export default async function AlbumPage({ params }: { params: Promise<{ albumId:
                                     />
                                 ) : (
                                     <ImageFadein
-                                        src={photo.originalImageUrl}
+                                        src={photo.imageUrl}
                                         alt={photo.title}
                                         width={800}
                                         height={800}
