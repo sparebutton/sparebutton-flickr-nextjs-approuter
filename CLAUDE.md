@@ -31,6 +31,7 @@
     - PostCSS プラグインは `@tailwindcss/postcss`
 6. **環境変数はサーバー（ビルド）側のみ** — `FLICKR_API_KEY` / `FLICKR_USER_ID` / `FLICKR_COLLECTION_ID` はクライアントに露出させない。`NEXT_PUBLIC_` プレフィックスを付けず、ビルド時取得の関数内でのみ参照する。
 7. **`useEffect` の依存配列を省略しない** — [src/components/ui/Dialog.tsx](src/components/ui/Dialog.tsx) で過去に依存漏れバグが発生済み。新規追加時は ESLint exhaustive-deps を守る。
+8. **クライアント JS 前提の「初期非表示」スタイルを書き出し HTML に残さない** — [src/components/ui/ImageFadein.tsx](src/components/ui/ImageFadein.tsx) で `opacity-0` が静的 HTML に焼き込まれ、ハイドレーション未完了・JS 取得失敗時に画像が透明のまま残る不具合が発生済み。完全 SSG なので **JS が動かなくても中身が見える初期状態**にし、演出はマウント後に足す。`opacity-0` / `invisible` / `h-0` 等を初期 state で描画していないか確認する。
 
 ---
 
