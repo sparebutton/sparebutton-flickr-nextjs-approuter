@@ -31,7 +31,9 @@
     - PostCSS プラグインは `@tailwindcss/postcss`
 6. **環境変数はサーバー（ビルド）側のみ** — `FLICKR_API_KEY` / `FLICKR_USER_ID` / `FLICKR_COLLECTION_ID` はクライアントに露出させない。`NEXT_PUBLIC_` プレフィックスを付けず、ビルド時取得の関数内でのみ参照する。
 7. **`useEffect` の依存配列を省略しない** — [src/components/ui/Dialog.tsx](src/components/ui/Dialog.tsx) で過去に依存漏れバグが発生済み。新規追加時は ESLint exhaustive-deps を守る。
-8. **クライアント JS 前提の「初期非表示」スタイルを書き出し HTML に残さない** — [src/components/ui/ImageFadein.tsx](src/components/ui/ImageFadein.tsx) で `opacity-0` が静的 HTML に焼き込まれ、ハイドレーション未完了・JS 取得失敗時に画像が透明のまま残る不具合が発生済み。完全 SSG なので **JS が動かなくても中身が見える初期状態**にし、演出はマウント後に足す。`opacity-0` / `invisible` / `h-0` 等を初期 state で描画していないか確認する。
+8. **要素の可視性を JS やイベントに依存させない** — [src/components/ui/ImageFadein.tsx](src/components/ui/ImageFadein.tsx) で `opacity-0` が静的 HTML に焼き込まれ、ハイドレーション未完了・JS 取得失敗時に画像が透明のまま残る不具合が発生済み。完全 SSG なので **JS が動かなくても中身が見える初期状態**にし、演出はマウント後に足す。`opacity-0` / `invisible` / `h-0` 等を初期 state で描画していないか確認する。
+    - マウント後も同様。**「隠しておいてイベントで戻す」を書かない**（イベントを取りこぼすと戻らず、リロードするまで消えたままになる）。「常に見える状態に、演出だけを一度足す」形にする。`onLoad` で `opacity-0` → `opacity-100` に戻す実装が典型的な NG 例で、代わりに `load` 時に `animate-fade-in` を一度当てる。
+    - React の `onLoad` は**ハイドレーション前に発火した `load` を取りこぼす**。画像の読み込み完了を見るときは `img.complete` の確認か DOM の `load` の直接購読を使う。
 
 ---
 

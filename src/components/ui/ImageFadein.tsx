@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 
 // props
@@ -16,33 +16,35 @@ type ImageFadeinProps = {
 // component
 export const ImageFadein: React.FC<ImageFadeinProps> = ({ src, alt, width, height, className, containerClassName }) => {
     const imgRef = useRef<HTMLImageElement>(null);
-    // SSR / ハイドレーション時は不透明のまま描画する。
-    // 書き出し HTML に opacity-0 を残すと、JS が動かなかった場合に画像が永久に透明になるため。
-    const [isFadeReady, setIsFadeReady] = useState(false);
-    const [isLoaded, setIsLoaded] = useState(false);
 
+    // 「読み込むまで透明にしておく」のではなく「読み込めたら一度だけフェードのアニメーションを流す」方式。
+    // img は読み込みが終わるまで何も描画しないので初期状態を透明にする必要がなく、
+    // load を取りこぼしても画像が透明のまま残らない（演出が省略されるだけで済む）。
     useEffect(() => {
-        // 読み込み済み（キャッシュ等）ならフェードイン不要。onLoad を取りこぼしても表示されたままにする
-        if (imgRef.current?.complete) {
-            setIsLoaded(true);
-            return;
-        }
-        // 未読み込みのものだけ透明にし、onLoad でフェードインさせる
-        setIsFadeReady(true);
+        const img = imgRef.current;
+        if (!img) return;
+
+        // ハイドレーション前に読み込みが終わっていた場合はフェード不要
+        if (img.complete) return;
+
+        // React の onLoad はハイドレーション前に発火した load を取りこぼすため DOM のイベントを直接購読する。
+        // state を持たず classList を直接触るのは、load ハンドラ内で同期的にクラスを当てて
+        // 「描画されてから透明になる」ちらつきを避けるため。
+        const handleLoad = () => img.classList.add("animate-fade-in");
+        img.addEventListener("load", handleLoad, { once: true });
+
+        return () => img.removeEventListener("load", handleLoad);
     }, []);
 
-    const isVisible = !isFadeReady || isLoaded;
-
     return (
-        <div className={`bg-image ${containerClassName}`}>
+        <div className={`bg-image ${containerClassName ?? ""}`}>
             <Image
                 ref={imgRef}
                 src={src}
                 alt={alt}
                 width={width}
                 height={height}
-                className={`transition-opacity ${isVisible ? "opacity-100" : "opacity-0"} ${className}`}
-                onLoad={() => setIsLoaded(true)}
+                className={className}
             />
         </div>
     );
