@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.4] - 2026-08-07
+
+### Changed
+
+- `next` を 16.2.6 → 16.2.11 にアップグレード（GitHub Dependabot alerts 16 件 = 8 GHSA × 2 manifest に対応）
+  - 対象 CVE: Server Actions の SSRF (CVE-2026-64649) / App Router Server Actions の DoS (CVE-2026-64641) / rewrites の SSRF (CVE-2026-64645) / Turbopack 利用時の Middleware・Proxy バイパス (CVE-2026-64642) / Image Optimization API の SVG DoS (CVE-2026-64644) / レスポンスボディの Cache confusion (CVE-2026-64647, CVE-2026-64648) / Server Function エンドポイントの未認証開示 (CVE-2026-64643)
+  - いずれも Server Actions・Middleware・Image Optimization API といった Node ランタイム機能が対象。本プロジェクトは `output: "export"` の SSG + `images.unoptimized` で本番に Node サーバが存在しないため実害なし
+  - Dependabot PR #1 と同内容
+- `package.json` の `resolutions` を更新
+  - `brace-expansion` を `^1.1.16` に引き上げ（実体: 1.1.18）— 連続する非展開文字の指数時間展開による DoS (CVE-2026-13149, High) 対応。`serve → serve-handler → minimatch` 経由の devDep のため実害なし
+  - `postcss` を `^8.5.18` に引き上げ（実体: 8.5.26）— Previous Source Map 自動読み込みの Path Traversal (GHSA-r28c-9q8g-f849, High) 対応。ビルド時のみ動作しユーザー入力 CSS を扱わないため実害なし
+  - `sharp` `^0.35.0` を新規追加（実体: 0.35.3）— libvips 由来の脆弱性 (GHSA-f88m-g3jw-g9cj, High) 対応。`next` の optionalDependency (`^0.34.5`) を range 外に強制上書きしているが、`images.unoptimized` + SSG で sharp を経由しないため影響なし。ビルド成功を確認済み
+
 ## [0.2.3] - 2026-08-07
 
 ### Fixed
