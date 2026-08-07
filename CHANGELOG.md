@@ -2,6 +2,14 @@
 
 ## [0.2.7] - 2026-08-07
 
+### Added
+
+- `.claude/launch.json` — Claude Code のプレビュー用サーバー定義
+  - `flickr-dev`（`yarn dev` / 3000）と `flickr-export`（`serve out` / 3001）の 2 つ
+  - `flickr-export` は実際に Vercel へデプロイされるものと同じ静的 HTML を検証するためのもの。dev サーバーでは書き出し結果を確認できない
+- `.claude/docs-hygiene.conf` — update-docs スキルの衛生ゲート設定
+  - しきい値は既定のまま。このファイルの存在自体が SessionStart フックの門番になっており、無いとメモリ symlink の自動確立が発火しない
+
 ### Fixed
 
 - `yarn lint` が動作しなかった問題を修正（Next 16 で `next lint` が削除されているため `Invalid project directory provided, no such directory: .../lint` で失敗していた）
