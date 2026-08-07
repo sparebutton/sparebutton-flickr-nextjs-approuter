@@ -9,6 +9,7 @@
   - トリガーは `deployment_status`。`on: push` では Vercel のビルド完了前にパージが走り旧コンテンツを再キャッシュするだけになるため、Vercel が作成する GitHub Deployment の status が `success`（environment = `Production`）になるのを待つ
   - 必要な Secrets: `CLOUDFLARE_API_TOKEN`（ゾーン → キャッシュ パージ → パージ）、`CLOUDFLARE_ZONE_ID`
   - 手動実行用に `workflow_dispatch` も有効
+  - 動作検証済み: 手動実行で Cloudflare API が `HTTP 200 {"success":true}` を返し、`cf-cache-status` が `HIT` → `MISS` → `HIT` と推移することを確認。`deployment_status` トリガーの起動も、Secrets 未設定時の失敗 run（本番デプロイ成功の 2 秒後に起動）で確認済み
 - `.claude/memory/cloudflare-cache-and-purge.md` — キャッシュルールの各設定値を選んだ理由、パージ運用、Speed Brain の 503 挙動を記録
 
 ## [0.2.4] - 2026-08-07
