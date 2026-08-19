@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.8] - 2026-08-20
+
+### Added
+
+- iOS（WebKit）で一部の画像がまれに「?」（broken image）のまま残る問題への対策として、ロード失敗画像の自動リトライを追加（[ImageLoadRetry.tsx](src/components/ui/ImageLoadRetry.tsx) を新規作成し [layout.tsx](src/app/layout.tsx) に配置）
+  - iOS の WebKit は画像ロードの一時的な失敗（電波の瞬断・リソース逼迫など）を自動リトライせず broken image で確定させ、失敗結果をタブのメモリキャッシュに保持することがある（リロードで直らない場合があるのはこのため）。Mac の Safari では再現せず、iPhone では失敗する画像が毎回変わる
+  - `document` への capture リスナーで全画像の `error` を一括監視し、1.5 秒 → 3 秒の間隔で最大 2 回、`?retry=N` を付けて再リクエストする。同一 URL の再設定では WebKit が失敗結果をキャッシュから返すことがあるためクエリを変える（Flickr の画像 CDN がクエリ付きでも同一画像を 200 で返すことは確認済み）
+  - ハイドレーション前に失敗が確定した画像は `error` イベントを取りこぼすため、マウント時に `complete && naturalWidth === 0` を走査して回収する（CLAUDE.md ルール 8 の `load` と同じ構図）
+  - JS が動かない環境ではリトライが省略されるだけで表示は従来と同一（プリレンダー出力に変化なし）
+  - 調査で除外した原因: **Cloudflare**（画像は `live.staticflickr.com` = Flickr 自身の CloudFront 直配信で Cloudflare を経由しない。HTML もデスクトップ / iOS UA でバイト単位一致、Rocket Loader / Mirage / Polish の注入・有効化なし）、**Flickr CDN の恒常的エラー**（ページ内全 126 画像 × 3 ラウンドの一斉取得で 378/378 成功・最大 0.73 秒）、**画像自体の破損**（該当画像は 680×453・85KB の正常な JPEG）
+
 ## [0.2.7] - 2026-08-07
 
 ### Added

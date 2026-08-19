@@ -5,6 +5,7 @@ import "@/css/app.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Body } from "@/components/ui/Body";
+import { ImageLoadRetry } from "@/components/ui/ImageLoadRetry";
 import { notoSansJP } from "@/config/Fonts";
 
 export const metadata: Metadata = {
@@ -16,6 +17,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="ja">
             <Body className={`text-text bg-bg min-h-screen ${notoSansJP.className} antialiased`}>
+                <ImageLoadRetry />
                 <Header />
                 {children}
                 <Footer />
