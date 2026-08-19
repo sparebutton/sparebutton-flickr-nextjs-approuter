@@ -1,8 +1,11 @@
 ---
 name: cloudflare-cache-and-purge
 description: Cloudflare の Cache Rule で HTML をエッジに 1 時間キャッシュしている。デプロイ後はパージが必要で GitHub Actions で自動化済み。各設定値を選んだ理由と Speed Brain の挙動も記録
-metadata:
+metadata: 
+  node_type: memory
   type: project
+  originSessionId: b5a4b757-11dd-4ba9-ba5f-7bc585ad6472
+  modified: 2026-08-19T21:45:28.540Z
 ---
 
 # Cloudflare キャッシュ構成とデプロイ時のパージ
@@ -50,6 +53,13 @@ Speed Brain は**そのエッジにキャッシュ済みのページしか投機
 
 **How to apply:** 503 を見つけても `cf-speculation-refused` ヘッダが付いていれば正常動作。アクセスのあるページから順に 200 に変わる。
 
+## このゾーンが扱うのは HTML だけ（写真は通らない）
+
+写真は `live.staticflickr.com`（Flickr 自身の CloudFront）から直接配信され、Cloudflare は一切関与しない。画像の表示不良では Cloudflare を容疑者から即外してよい。
+
+2026-08-20 の「iOS だけ一部の画像が ? になる」問題で確認済み: HTML はデスクトップ/iOS UA でバイト一致（UA 分岐・Rocket Loader/Mirage/Polish の注入なし）、Flickr CDN も全画像一斉取得 ×3 で 378/378 成功。真因は iOS WebKit が画像ロードの一時失敗を自動リトライせず broken image で確定させる挙動（失敗をタブのメモリキャッシュに保持するためリロードでも直らないことがある）。対策は `src/components/ui/ImageLoadRetry.tsx`（全画像の error を capture 監視し、`?retry=N` を付けて最大 2 回自動リトライ。CHANGELOG 0.2.8）。
+
 ## 関連
 
 - [[dependency-vuln-handling]] — 同じく本番構成（SSG + Vercel）に依存した判断を含む
+- [[stale-view-diagnosis]] — 同じく「見え方がおかしい」ときの切り分け。あちらは古い表示、こちらは画像のロード失敗

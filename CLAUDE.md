@@ -37,6 +37,7 @@
 8. **要素の可視性を JS やイベントに依存させない** — [src/components/ui/ImageFadein.tsx](src/components/ui/ImageFadein.tsx) で `opacity-0` が静的 HTML に焼き込まれ、ハイドレーション未完了・JS 取得失敗時に画像が透明のまま残る不具合が発生済み。完全 SSG なので **JS が動かなくても中身が見える初期状態**にし、演出はマウント後に足す。`opacity-0` / `invisible` / `h-0` 等を初期 state で描画していないか確認する。
     - マウント後も同様。**「隠しておいてイベントで戻す」を書かない**（イベントを取りこぼすと戻らず、リロードするまで消えたままになる）。「常に見える状態に、演出だけを一度足す」形にする。`onLoad` で `opacity-0` → `opacity-100` に戻す実装が典型的な NG 例で、代わりに `load` 時に `animate-fade-in` を一度当てる。
     - React の `onLoad` は**ハイドレーション前に発火した `load` を取りこぼす**。画像の読み込み完了を見るときは `img.complete` の確認か DOM の `load` の直接購読を使う。
+    - **画像のロード失敗の回収は [src/components/ui/ImageLoadRetry.tsx](src/components/ui/ImageLoadRetry.tsx) が document 全体で行う**（iOS の WebKit は一時失敗を自動リトライせず broken image で確定させるため）。コンポーネント単位でリトライを重複実装しない。
 
 ---
 
