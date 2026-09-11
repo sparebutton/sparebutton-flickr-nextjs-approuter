@@ -14,6 +14,8 @@
 
 - `yarn lint` 0 件、`yarn build` 成功（36 ページ、型チェック通過）
 - 0.2.9 の本番反映を確認: Vercel の Production デプロイ成功 → `purge-cloudflare-cache` ワークフロー成功 → `https://www.sparebutton.jp/` が 200 / `cf-cache-status: MISS` / `age: 0`（パージ直後の再取得）
+- 0.2.10 も同様に本番反映を確認（Production デプロイ成功 → パージ成功 → 200 / `cf-cache-status: MISS`）。push 後に Dependabot のアラートが 0 件になったことも確認済み
+- Dependabot PR #2（`baseline-browser-mapping`）は、同じ更新を `resolutions` で先に入れたため Dependabot 自身が superseded として自動クローズ（手動対応は不要だった）
 
 ## [0.2.9] - 2026-09-11
 

@@ -79,6 +79,24 @@ gh api "repos/sparebutton/sparebutton-flickr-nextjs-approuter/dependabot/alerts?
 
 **How to apply:** transitive 依存は必ず `resolutions` に書いて `yarn install`。実行後は `grep -A2 '^<pkg>@' yarn.lock` で解決後バージョンを目視確認する
 
+## push 後にもう一度アラートを確認する（2026-09-11 追記）
+
+push すると GitHub が依存グラフを再スキャンし、**第二波のアラート**が出ることがある。2026-09-11 に 6 件を消化して push した直後、`js-yaml`（high / GHSA-2883-xcg3-v3hh）が新たに現れた。`js-yaml@4.3.1` は以前から lockfile にあり、その push の変更が持ち込んだものではない（アドバイザリ側が新しく公開された）。
+
+**Why:** 「push したから 0 件のはず」と思い込むと、増えたアラートに気づかないまま次のセッションへ持ち越す
+
+**How to apply:** push 後に `gh api .../dependabot/alerts?state=open` をもう一度叩いて 0 件を確認するまでが 1 セット。push の remote 出力に出る "GitHub found N vulnerabilities" も裏取りに使える（0 件なら行自体が出ない）
+
+## resolutions で先回りすると Dependabot PR は自動で閉じる（2026-09-11 追記）
+
+Dependabot PR と同じ更新を `resolutions` で先に入れて push すると、Dependabot が次回実行で「Looks like <pkg> is no longer updatable, so this is no longer needed.」とコメントして PR を自動クローズする。**手動で閉じる必要はない**（数分待つ）。
+
+ただし**その Dependabot の実行は Actions 上で `failure` と表示される**。PR のクローズ自体は正常に完了しており、赤いマークが 1 つ残るだけ。
+
+**Why:** 赤い実行結果を見て「パージやデプロイが失敗した」と誤認しやすい。`Purge Cloudflare cache` の成否とは無関係
+
+**How to apply:** Actions の赤が `npm_and_yarn in /. for <pkg>` 系なら PR のクローズ処理。デプロイ系のワークフローと取り違えないこと
+
 ## 関連
 
 - [[user-context]] が無いので別途追加検討余地
