@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.2.10] - 2026-09-11
+
+### Changed
+
+- `js-yaml` 4.3.1 → **4.3.2**（[package.json](package.json) の `resolutions` に追加）
+  - GHSA-2883-xcg3-v3hh（high）— `maxTotalMergeKeys` が空のマッピングを数えないため、YAML のマージキーを悪用して `O(N*K)` の CPU 消費を強制できる（ReDoS 類似の DoS）。`>= 4.0.0, < 4.3.2` が対象
+  - **本番に実害なし**。`eslint` → `@eslint/eslintrc` の transitive な devDependency で、`yarn lint` 実行時に自分のリポジトリ内の設定ファイルを読むためだけに使われる。信頼できない YAML を解析する経路がない
+  - 0.2.9 の push 直後に依存グラフが再スキャンされて現れたアラート（0.2.9 の変更が持ち込んだものではなく、`js-yaml@4.3.1` は以前から lockfile にあった）
+  - 親（`@eslint/eslintrc`）の要求は `^4.3.0` なので 4.3.2 で満たせる。メジャー跨ぎ（5.x）は避けた
+
+### Verified
+
+- `yarn lint` 0 件、`yarn build` 成功（36 ページ、型チェック通過）
+- 0.2.9 の本番反映を確認: Vercel の Production デプロイ成功 → `purge-cloudflare-cache` ワークフロー成功 → `https://www.sparebutton.jp/` が 200 / `cf-cache-status: MISS` / `age: 0`（パージ直後の再取得）
+
 ## [0.2.9] - 2026-09-11
 
 ### Changed
