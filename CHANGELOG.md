@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.2.9] - 2026-09-11
+
+### Changed
+
+- Dependabot の脆弱性アラート 6 件（critical 2 / high 1 / medium 1 の実体 4 種）を消化。**いずれも本番に実害はないが、運用ポリシー（アラート 0 件の維持）に従って追従**
+  - `next` 16.2.11 → **16.3.4**（`eslint-config-next` も同バージョンへ）
+    - GHSA-2xp9-vwfh-vxw4（critical）— Image Optimization API が AVIF を最適化する際に libheif 経由で RCE に至りうる。修正は 16.3.3 以降
+    - GHSA-p293-qw3h-jr36（critical）— Windows 上でホストされたサーバーで RCE に至りうる。修正は 16.3.3 以降
+    - **実害なしの根拠**: [next.config.ts](next.config.ts) が `output: "export"` + `images: { unoptimized: true }` のため、本番に Node サーバーも Image Optimization API も存在しない。ホストも Vercel（Linux）で Windows ではない
+  - `sharp` 0.35.3 → **0.35.4**（[package.json](package.json) の `resolutions`。`@img/sharp-libvips-*` も 1.3.2 → 1.3.3）
+    - GHSA-rgj7-g3m4-5g8c（high）— 同梱 libheif の脆弱性（CVE-2026-84383 / GHSA-g89c-p67h-r497 / GHSA-2jg2-4ch7-h545）。`< 0.35.4` が対象で、0.35.4 が libheif 1.23.2 を同梱して解消。上記 Next.js の critical と根本原因は同一
+    - **実害なしの根拠**: `next` の transitive 依存だが、画像最適化を無効にしているため `sharp` による変換自体が一度も走らない
+  - `baseline-browser-mapping` 2.10.31 → **2.11.22**（`resolutions` を新規追加）
+    - GHSA-w5vr-8v7q-w6rv（medium）— 不正な入力で例外ではなく `process.exit()` を呼び DoS になる。`>= 2.0.0, < 2.11.0` が対象
+    - **実害なしの根拠**: `next` / `browserslist` がビルド時にのみ使うツール。ランタイムには含まれない
+    - `yarn upgrade <pkg>` は直接依存しか対象にしないため lockfile が更新されず、`resolutions` で固定した（transitive 依存の既定パターン）
+  - Dependabot の自動 PR は `resolutions` で固定した transitive 依存には出せないため、`sharp` は手動対応。`baseline-browser-mapping` の自動 PR（#2）は本コミットで内容が重複するため不要
+
+### Verified
+
+- `yarn lint` 0 件、`yarn build` 成功（36 ページの静的書き出し、型チェック通過）
+- `serve out`（`flickr-export`）でトップページとアルバムページを表示確認。画像の表示・コンソールエラーなし。Next 16.2 → 16.3 のマイナー更新による表示・出力の変化は認められず
+
 ## [0.2.8] - 2026-08-20
 
 ### Added
