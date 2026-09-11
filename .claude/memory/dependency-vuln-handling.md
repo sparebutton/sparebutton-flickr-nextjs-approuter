@@ -1,6 +1,6 @@
 ---
 name: dependency-vuln-handling
-description: Dependabot 脆弱性アラート対応の確立パターン。直接依存は bump、transitive は package.json の resolutions で固定。SSG+Vercel のため多くの Node 系 CVE は実害なしだが alert 消化のため追従する。GitHub Security 設定状態も記録
+description: Dependabot 脆弱性アラート対応の確立パターン。直接依存は bump、transitive は resolutions で固定（yarn upgrade は効かない）。アラート全件は通知メールではなく gh api で列挙する。SSG+Vercel のため多くの Node 系 CVE は実害なしだが alert 消化のため追従する。GitHub Security 設定状態も記録
 metadata:
   type: project
 ---
@@ -57,6 +57,27 @@ metadata:
 - CodeQL — SSG + 入力なしで価値中、保留中
 
 **How to apply:** 次回以降の脆弱性アラートは自動 PR で届く想定。レビューしてマージするだけで済む。通常バージョン更新（脆弱性なし）は手動で `yarn upgrade` が必要
+
+## アラートの全体像はメールではなく API で取る（2026-09-11 追記）
+
+Dependabot の通知メールは**該当アラートの 1 件しか載らない**。2026-09-11 に届いた `sharp` のメール（high 1 件）を起点に調べたところ、実際の open アラートは 6 件（`next` の critical 2 種が重複計上で 4 件 + `sharp` + `baseline-browser-mapping`）だった。critical の方がメールに現れていない。
+
+```bash
+gh api "repos/sparebutton/sparebutton-flickr-nextjs-approuter/dependabot/alerts?state=open" \
+  --jq '.[] | "\(.number)\t\(.security_advisory.severity)\t\(.dependency.package.name)\t\(.security_advisory.ghsa_id)\t\(.security_vulnerability.vulnerable_version_range) -> \(.security_vulnerability.first_patched_version.identifier // "n/a")"'
+```
+
+**Why:** メール 1 通 = アラート 1 件の対応で終えると、より深刻なものを見落とす
+
+**How to apply:** 脆弱性メールが来たら、まず上のコマンドで open アラートを**全件**列挙してから着手する。`gh api` は URL に `?` を含むので zsh ではクォート必須（無いと `no matches found`）
+
+## `yarn upgrade <pkg>` は transitive 依存に効かない（2026-09-11 追記）
+
+`yarn upgrade baseline-browser-mapping` は成功と表示されるが lockfile は変わらない（yarn 1.x の `upgrade` は `package.json` に載っている直接依存しか対象にしない）。
+
+**Why:** 「成功」と出るので更新できたと誤認しやすい
+
+**How to apply:** transitive 依存は必ず `resolutions` に書いて `yarn install`。実行後は `grep -A2 '^<pkg>@' yarn.lock` で解決後バージョンを目視確認する
 
 ## 関連
 
