@@ -43,6 +43,17 @@ Cache Rule **「Cache HTML (SSG)」**（ルール → キャッシュ ルール�
 
 **Why:** `on: push` にすると Vercel のビルド完了前にパージが走り、旧コンテンツを再キャッシュするだけで意味がない。Vercel の GitHub 連携が張る Deployment を待つのが、Vercel API トークンなしで完了を検知できる唯一の手段。
 
+**How to apply（完了確認）:** パージ run の特定は**日付で絞らず `headSha` をローカル HEAD と照合する**。
+
+```bash
+gh run list --limit 5   # Purge Cloudflare cache / event=deployment_status の行を見る
+gh run view <id> --json headSha,conclusion -q '"\(.headSha) \(.conclusion)"'
+git rev-parse HEAD      # 一致すれば自分の push に対応する run
+curl -sS -o /dev/null -D - https://www.sparebutton.jp/ | grep -iE '^HTTP|cf-cache-status|^age:'
+```
+
+`gh run list` の `createdAt` は **UTC**。JST 早朝の push は UTC では前日の日付になるため、「今日」を JST の日付で書いて絞ると**成功している run にマッチせず永久に待つ**（2026-09-14 に実際に空振りした: run は JST 07:14 = `2026-09-13T22:14:36Z`）。パージ直後は `cf-cache-status: MISS` / `age: 0` になる。
+
 **How to apply:** 必要な Secrets は `CLOUDFLARE_API_TOKEN`（権限: ゾーン → キャッシュ パージ → パージ / リソース: sparebutton.jp のみ）と `CLOUDFLARE_ZONE_ID`。手動実行は Actions タブの `workflow_dispatch`、またはダッシュボードの キャッシュ → 構成 → すべてをパージ。
 
 ## Speed Brain（投機プリフェッチ）の挙動

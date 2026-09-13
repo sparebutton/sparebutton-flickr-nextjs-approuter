@@ -13,6 +13,7 @@
 ### Verified
 
 - `yarn lint` 0 件、`yarn build` 成功（36 ページの静的書き出し、型チェック通過）
+- 本番反映を確認: Vercel の Production デプロイ成功 → `purge-cloudflare-cache` ワークフロー成功（run `34786199728` / `headSha` がローカル HEAD `7c4a29d` と一致）→ `https://www.sparebutton.jp/` が 200 / `cf-cache-status: MISS` / `x-vercel-cache: MISS` / `age: 0`（パージ直後の再取得）
 
 ## [0.2.10] - 2026-09-11
 

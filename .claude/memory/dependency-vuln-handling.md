@@ -71,6 +71,19 @@ gh api "repos/sparebutton/sparebutton-flickr-nextjs-approuter/dependabot/alerts?
 
 **How to apply:** 脆弱性メールが来たら、まず上のコマンドで open アラートを**全件**列挙してから着手する。`gh api` は URL に `?` を含むので zsh ではクォート必須（無いと `no matches found`）
 
+## メールは「発生時点のスナップショット」で、解決済みでも届く（2026-09-14 追記）
+
+2026-09-14 に CVE-2026-75604（critical / Next.js の Windows ホスト上 RCE）のメールが届いたが、**そのアラートは 3 日前の 2026-09-11 にクローズ済み**だった（0.2.9 の `next` 16.3.4 への更新で解消。修正版は 16.3.3 以降）。メールはアラート**発生時**に送られるもので、受信時点の状態を表していない。
+
+```bash
+gh api repos/sparebutton/sparebutton-flickr-nextjs-approuter/dependabot/alerts --paginate \
+  --jq '.[] | "\(.number)\t\(.state)\t\(.dependency.package.name)\t\(.security_advisory.cve_id)\t\(.security_vulnerability.vulnerable_version_range) -> \(.security_vulnerability.first_patched_version.identifier // "none")"'
+```
+
+**Why:** メールを見て反射的に bump すると、すでに解決済みの作業をやり直すことになる。逆に「前に対応したから大丈夫」と無視すると、同じパッケージの**新しい**アラートを見落とす。どちらもメールだけでは区別できない
+
+**How to apply:** `?state=open` で絞らず**全件 + `state`** を取る。`state` が `fixed` なら `fixed_at` でいつ解決したかまで分かり、対応済みだと即断できる。open が 0 件なら作業は不要（そのうえで latest への追従をするかは別の判断）
+
 ## `yarn upgrade <pkg>` は transitive 依存に効かない（2026-09-11 追記）
 
 `yarn upgrade baseline-browser-mapping` は成功と表示されるが lockfile は変わらない（yarn 1.x の `upgrade` は `package.json` に載っている直接依存しか対象にしない）。
