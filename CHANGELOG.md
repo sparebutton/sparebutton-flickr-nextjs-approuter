@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.11] - 2026-09-14
+
+### Changed
+
+- `next` 16.3.4 → **16.3.5**（`eslint-config-next` も同バージョンへ）
+  - **セキュリティ修正ではなくパッチ追従**。16.3.5 は canary からの bug fix backport のみで、CVE / GHSA の記載はない
+  - 内容: `next/image` のディスク LRU キャッシュで 0 バイトエントリをスキップ / 空画像を読み書き時に拒否、`output: 'standalone'` + adapter 使用時の server NFT 出力、loading・template ファイルの script タグへの CSP nonce 付与、`use cache` の prerender signal 保持の修正
+  - 本プロジェクトは `output: "export"` + `images: { unoptimized: true }` のため、上記のいずれも実際の挙動には影響しない
+- Dependabot からの CVE-2026-75604（critical, Next.js Windows ホスト上の RCE）のメール通知を受けて確認したが、**0.2.9 の `next` 16.3.4 への更新ですでに解消済み**（alert #99 / #100 は 2026-09-11 にクローズ済み）。`gh api` で全件確認し open アラートは 0 件。今回の更新はその確認のついでのパッチ追従
+
+### Verified
+
+- `yarn lint` 0 件、`yarn build` 成功（36 ページの静的書き出し、型チェック通過）
+
 ## [0.2.10] - 2026-09-11
 
 ### Changed
