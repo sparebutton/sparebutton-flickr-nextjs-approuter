@@ -9,6 +9,9 @@ import { ImageLoadRetry } from "@/components/ui/ImageLoadRetry";
 import { notoSansJP } from "@/config/Fonts";
 
 export const metadata: Metadata = {
+    // OGP の画像など、相対パスで書いたメタデータを絶対 URL に解決する基準。
+    // 未設定だとビルド時に http://localhost:3000 が使われ、SNS のプレビュー画像が壊れる。
+    metadataBase: new URL(Site.url),
     title: Site.name,
     description: Site.description,
 };

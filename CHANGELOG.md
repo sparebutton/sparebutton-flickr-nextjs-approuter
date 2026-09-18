@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.2.13] - 2026-09-18
+
+姉妹プロジェクト（vanilla 版）と書き出し結果を機械的に比較して見つかった 2 件。
+
+### Fixed
+
+- トップページの `og:image` / `twitter:image` が `http://localhost:3000/images/og-image.png` になっており、SNS のプレビュー画像が壊れていた問題を修正（[layout.tsx](src/app/layout.tsx)）
+  - `metadata` に `metadataBase` が無く、相対パスの `/images/og-image.png` がビルド時の既定値 `http://localhost:3000` で解決されていた。`yarn build` のたびに出ていた `metadataBase property in metadata export is not set` の警告がこれで、警告どまりと見て放置されていた
+  - `metadataBase: new URL(Site.url)` を設定。アルバムページは Flickr の絶対 URL を使っているため影響を受けていなかった
+- Flickr API の失敗時に、`api_key` を含む URL 全体がエラーログに出ていた問題を修正（[fetchJSON.ts](src/lib/fetchJSON.ts)）
+  - Vercel のビルドログに API キーが残りえた。メソッド名と HTTP ステータスだけを出すように変更（例: `Flickr API Error: 503 flickr.photos.getInfo`）。戻り値（失敗時 `null`）やリトライなしの挙動は変えていない
+
+### Verified
+
+- `yarn lint` 0 件、`yarn build` 成功（36 ページ）。`metadataBase` の警告は 0 件に
+- `out/index.html` の `og:image` / `twitter:image` が `https://www.sparebutton.jp/images/og-image.png` になり、書き出し全体に `localhost` を含むファイルが無いことを確認。アルバムページの OGP は変化なし
+- `fetch` を 503 に差し替えて `fetchJSON` を呼び、ログに API キーが含まれないこと・戻り値が `null` のままであることを確認
+
 ## [0.2.12] - 2026-09-18
 
 ### Fixed
