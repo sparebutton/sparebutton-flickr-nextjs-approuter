@@ -7,7 +7,7 @@
 
 ## 🧭 プロジェクト概要
 
-> ⚠️ **2026-09-18 以降、このリポジトリは本番ではない。** `www.sparebutton.jp` は姉妹プロジェクトの vanilla 版（`../../sparebutton_flickr_vanilla/sparebutton-flickr-vanilla`、Cloudflare Workers）が配信している。ここに push しても本番には出ない（切り戻し用に Vercel 上へ残してあるだけ）。修正は vanilla 版に入れること。経緯はメモリ `long-term-direction`。
+> ⚠️ **このリポジトリは 2026-09-19 に終了し、アーカイブした（参照用）。** `www.sparebutton.jp` は姉妹プロジェクトの vanilla 版（`../../sparebutton_flickr_vanilla/sparebutton-flickr-vanilla`、Cloudflare Workers）が配信している。Vercel のプロジェクトは削除済みで、ここはどこにもデプロイされない。切り戻し先としても使えない。修正は vanilla 版に入れること。経緯はメモリ `long-term-direction`。以下の記述は、現役だった当時のもの。
 
 **SPAREBUTTON (https://www.sparebutton.jp)** の Flickr コレクション表示用 Next.js サイト。Flickr API からアルバム・写真を取得し、完全 SSG として静的書き出し → Vercel デプロイ。
 

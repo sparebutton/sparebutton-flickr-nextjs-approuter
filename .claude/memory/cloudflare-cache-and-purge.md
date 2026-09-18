@@ -10,6 +10,8 @@ metadata:
 
 # Cloudflare キャッシュ構成とデプロイ時のパージ
 
+> **2026-09-19 追記: この構成はもう使われていない。** 本番は Cloudflare Workers が直接配信するようになり（デプロイと同時に切り替わるのでパージ不要）、Vercel のプロジェクトとパージ workflow は撤去した。Cache Rule「Cache HTML (SSG)」も削除対象。以下は Cloudflare → Vercel の 2 段構成だった当時の記録。
+
 2026-08-07 導入。それ以前は HTML が一切エッジキャッシュされず（`cf-cache-status: DYNAMIC`）、ゾーン全体のキャッシュヒット率が 3.44% だった。
 
 ## 構成

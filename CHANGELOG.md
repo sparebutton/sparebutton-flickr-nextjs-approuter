@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-09-19 — このリポジトリの終了
+
+`www.sparebutton.jp` の配信は 2026-09-18 22:29 JST に姉妹プロジェクトの vanilla 版（Cloudflare Workers）へ切り替わった。翌 09-19 に切り戻し経路も含めて片付け、このリポジトリはアーカイブする。以後の変更は vanilla 版のリポジトリ（`sparebutton/sparebutton_flickr_vanilla`）で行う。
+
+### Removed
+
+- `.github/workflows/purge-cloudflare-cache.yml` — Vercel のデプロイ完了を合図に Cloudflare のキャッシュをパージする workflow。Vercel のプロジェクトを削除したので合図が来なくなり、本番（Cloudflare Workers）はデプロイと同時に切り替わるためパージ自体も要らない。Secrets の `CLOUDFLARE_API_TOKEN` に入っているトークンは Cloudflare 側で失効させる
+
+### Changed（運用）
+
+- Cloudflare の DNS を Vercel 向け（apex A `76.76.21.21` / `www` CNAME `cname.vercel-dns.com`）からダミーのプロキシ済みレコードへ編集
+- Vercel のこのプロジェクトから `sparebutton.jp` / `www.sparebutton.jp` を外し、プロジェクトを削除。`…vercel.app` は 404 になった
+- 移行の理由: このサイトは静的な HTML と画像が中心で、vanilla 版は同じ見た目を約 3KB の JS・ランタイム依存 0 で実現している。こちらは約 600KB の JS を配り、直近の保守（0.2.9〜0.2.11）はすべて「使っていない機能の脆弱性アラートの消化」だった。詳細な経緯は vanilla 版の CHANGELOG とメモリ `domain-switch-plan`
+
 ## [0.2.14] - 2026-09-18
 
 このリポジトリは同日に本番でなくなった（`www.sparebutton.jp` は vanilla 版が配信）。切り戻し先として vanilla 版と揃えておくための変更。

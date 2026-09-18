@@ -1,11 +1,13 @@
 ---
 name: long-term-direction
-description: 2026-09-18 に www.sparebutton.jp を Cloudflare Workers 上の vanilla 版へ切り替えた。この Next.js 版はもう本番ではなく、切り戻し用に Vercel 上へ残してあるだけ。新規投資はしない
+description: この Next.js 版は 2026-09-19 に終了しアーカイブした。www.sparebutton.jp は Cloudflare Workers 上の vanilla 版が配信している。Vercel のプロジェクトは削除済みで、切り戻し先としても使えない
 metadata:
   type: project
 ---
 
-# この Next.js 版はもう本番ではない（vanilla 版へ切り替え済み）
+# この Next.js 版は終了した（vanilla 版へ移行・アーカイブ済み）
+
+**2026-09-19 追記: 切り戻し経路も片付けた。** DNS は Vercel を向いておらず（ダミーのプロキシ済みレコード）、Vercel のプロジェクトは削除、パージ workflow も撤去し、GitHub のリポジトリはアーカイブした。以下は切り替え当日（09-18）時点の記述。
 
 **2026-09-18 22:29 JST、`www.sparebutton.jp` の配信を姉妹プロジェクトの vanilla 版（`../../sparebutton_flickr_vanilla/sparebutton-flickr-vanilla`、Cloudflare Workers）へ切り替えた。** Cloudflare のエッジで Worker のルート `www.sparebutton.jp/*` が先に受けるため、このリポジトリを push して Vercel にデプロイしても**本番には出ない**。apex の転送も Cloudflare の Redirect Rule に移した。DNS は未変更で、ルートを削除すればこの Next.js 版に即座に戻る（切り戻し用）。
 
