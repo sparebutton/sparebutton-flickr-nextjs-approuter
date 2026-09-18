@@ -4,7 +4,7 @@
 
 ## project
 
-- [長期の方針: vanilla 版へ移行する](long-term-direction.md) — 土台は vanilla 版に決定（2026-09-18）。www は Cloudflare Workers 上の vanilla 版へ切り替え予定。こちらは切り替えまでの現行本番で、新規投資は最小限
+- [この Next.js 版はもう本番ではない](long-term-direction.md) — 2026-09-18 に www を Cloudflare Workers 上の vanilla 版へ切り替え済み。こちらに push しても本番に出ない。切り戻し用に残してあるだけで、修正は vanilla 版に入れる
 - [Dependabot 脆弱性対応の運用パターン](dependency-vuln-handling.md) — 直接依存は bump / transitive は resolutions（yarn upgrade は効かない）、全件は gh api で列挙（メールは 1 件のみ・解決済みでも届く）、SSG+Vercel で実害なくても alert 消化のため追従
 - [Cloudflare キャッシュ構成とデプロイ時のパージ](cloudflare-cache-and-purge.md) — HTML をエッジに 1 時間キャッシュ、デプロイ後はパージ必須（GitHub Actions で自動化）、Speed Brain の 503 挙動。写真は Flickr の CloudFront 直配信で CF 非経由（画像の ? は Flickr の 429 → flickr-original-rate-limit）
 - [Flickr は 1024px 超のサイズだけ 429 で制限する](flickr-original-rate-limit.md) — Safari で写真が ? になる真因（0.2.8 の「WebKit 一時失敗」は誤診）。curl / Chrome で通っても Safari で通る保証にならない。WKWebView での再現・検証手順
