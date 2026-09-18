@@ -68,7 +68,7 @@ Speed Brain は**そのエッジにキャッシュ済みのページしか投機
 
 写真は `live.staticflickr.com`（Flickr 自身の CloudFront）から直接配信され、Cloudflare は一切関与しない。画像の表示不良では Cloudflare を容疑者から即外してよい。
 
-2026-08-20 の「iOS だけ一部の画像が ? になる」問題で確認済み: HTML はデスクトップ/iOS UA でバイト一致（UA 分岐・Rocket Loader/Mirage/Polish の注入なし）、Flickr CDN も全画像一斉取得 ×3 で 378/378 成功。真因は iOS WebKit が画像ロードの一時失敗を自動リトライせず broken image で確定させる挙動（失敗をタブのメモリキャッシュに保持するためリロードでも直らないことがある）。対策は `src/components/ui/ImageLoadRetry.tsx`（全画像の error を capture 監視し、`?retry=N` を付けて最大 2 回自動リトライ。CHANGELOG 0.2.8）。
+2026-08-20 の「iOS だけ一部の画像が ? になる」問題で確認済み: HTML はデスクトップ/iOS UA でバイト一致（UA 分岐・Rocket Loader/Mirage/Polish の注入なし）。このとき真因を「iOS WebKit の一時失敗」とし `src/components/ui/ImageLoadRetry.tsx` を入れたが（CHANGELOG 0.2.8）、**これは誤診だった**。2026-09-18 に Mac の Safari でも再現し、真因は Flickr オリジンが長辺 1024px 超のサイズ（`_h` / `_k` / 原寸 `_o`）だけを 429 でレート制限することだと判明 → [[flickr-original-rate-limit]]。Cloudflare が無関係という結論は変わらない。
 
 ## 関連
 
