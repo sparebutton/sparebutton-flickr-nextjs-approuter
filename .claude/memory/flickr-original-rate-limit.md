@@ -18,7 +18,7 @@ metadata:
 
 **Why:** 0.2.8（2026-08-20）では「iOS WebKit の一時失敗」と誤診した。さらに 2026-09-18 の調査中も、最初は「原寸だけが対象」と早合点して `_h` / `_k` を使う修正を作り、WebKit での再検証で 0/5 になって気づいた。curl では `_h` が 200 で通っていたのが原因。
 
-**How to apply:** 写真が出ない報告を受けたら、デコードや回線を疑う前に**ステータスコードを見る**。対策は 1024px 超を使わないこと（[fetchPhotos.ts](../../src/lib/fetchPhotos.ts) の `pickImageUrl()` / `SAFE_SIZE_SUFFIXES`、CHANGELOG 0.2.12）。原寸に残すのは派生サイズでは幅が足りない超縦長の 3 枚だけ。`SAFE_SIZE_SUFFIXES` に `h` / `k` を足さない。
+**How to apply:** 写真が出ない報告を受けたら、デコードや回線を疑う前に**ステータスコードを見る**。対策は 1024px 超を使わないこと（[fetchPhotos.ts](../../src/lib/fetchPhotos.ts) の `pickImageUrl()` / `SAFE_SIZE_SUFFIXES`、CHANGELOG 0.2.12）。派生サイズでは幅が足りない超縦長の 3 枚は、0.2.14 から `public/images/photos/` に置いた原寸を自前配信している（ファイル名は Flickr の原寸と同じ `<id>_<原寸の secret>_o.jpg`。vanilla 版も同じ仕組み）。`SAFE_SIZE_SUFFIXES` に `h` / `k` を足さない。
 
 ## 再現と検証のコツ
 

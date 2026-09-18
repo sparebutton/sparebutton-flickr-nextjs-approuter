@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import { Photo } from "@/types/flickr";
 import { fetchJSON } from "@/lib/fetchJSON";
 import { buildFlickrUrl, USER_ID } from "@/lib/flickrApi";
@@ -28,6 +30,9 @@ const MIN_WIDTH_RATIO = 0.8;
 // 長辺 1024px を超えるサイズ（`url_h` / `url_k` / `url_o` など）はここに足さないこと。
 const SAFE_SIZE_SUFFIXES = ["m", "z", "c", "l"] as const; // 長辺 500 / 640 / 800 / 1024
 
+// 自前配信する原寸の置き場（`public/` 配下）
+const LOCAL_ORIGINALS_DIR = "images/photos";
+
 // Flickr が返す写真 1 件（利用する項目のみ）
 type FlickrPhoto = {
     id: string;
@@ -48,8 +53,13 @@ type FlickrPhoto = {
  *
  * Flickr の派生サイズは**長辺**を基準に縮小されるため、縦長の写真ほど幅が狭くなる
  * （例: 680×13600 のスクロールポスターは長辺 1024px 版で 51×1024 になってしまう）。
- * そこで**幅**を基準に、制限されないサイズの中で最も幅の広いものを選び、それでも表示幅に対して
- * 足りない超縦長の写真だけ原寸を使う（1 ページに数枚ならレート制限に掛かりにくい）。
+ * そこで**幅**を基準に、制限されないサイズの中で最も幅の広いものを選ぶ。それでも表示幅に対して
+ * 足りない超縦長の写真だけは原寸が要るが、原寸は制限対象なので Flickr からは配信せず、
+ * `public/images/photos/` に置いたコピーを自前で配信する。
+ *
+ * コピーのファイル名は Flickr の原寸と同じ `<id>_<原寸の secret>_o.jpg` にする。Flickr 側で画像を差し替えると
+ * secret が変わって名前が合わなくなるので、古いコピーを出し続けることがない。合うコピーが無い場合は
+ * Flickr の原寸 URL を使い（表示されない可能性がある）、ビルド時に警告する。
  *
  * Flickr は拡大した派生サイズを作らないので、派生サイズが原寸より大きくなることはない。
  */
@@ -69,7 +79,19 @@ function pickImageUrl(photo: FlickrPhoto): string {
         return widest.url;
     }
 
-    return photo.url_o || "/images/no-image.svg";
+    if (!photo.url_o) return "/images/no-image.svg";
+
+    // このファイルはビルド時（SSG）にしか実行されないので、fs で public/ を直接確認できる
+    const file = path.posix.basename(new URL(photo.url_o).pathname);
+    if (fs.existsSync(path.join(process.cwd(), "public", LOCAL_ORIGINALS_DIR, file))) {
+        return `/${LOCAL_ORIGINALS_DIR}/${file}`;
+    }
+
+    console.warn(
+        `WARNING: Flickr の原寸に頼っている写真があります（レート制限の対象で、閲覧者によっては表示されません）: ` +
+            `${photo.title || "Untitled"}（${photo.id}）。原寸をダウンロードして public/${LOCAL_ORIGINALS_DIR}/${file} に置いてください`
+    );
+    return photo.url_o;
 }
 
 // アルバム内のすべての写真を取得

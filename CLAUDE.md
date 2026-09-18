@@ -27,7 +27,8 @@
 2. **データ取得は `src/lib/` に集約** — 旧 `hooks/useFetch*` は [src/lib/fetchAlbums.ts](src/lib/fetchAlbums.ts) / [src/lib/fetchPhotos.ts](src/lib/fetchPhotos.ts) に移動済み。React Hook ではなく純粋な非同期関数なので `use` プレフィックスを付けない。
 3. **Flickr API URL は共通ヘルパー経由** — [src/lib/flickrApi.ts](src/lib/flickrApi.ts) の `buildFlickrUrl` を使い、エンドポイント・キー・形式パラメータの直書きを避ける。
     - **画像 URL は組み立てない** — Flickr はサイズごとに secret が異なるため、`extras` で受け取った `url_*` をそのまま使う。
-    - **長辺 1024px 超のサイズ（`url_h` / `url_k` / 原寸 `url_o`）を極力使わない** — Flickr のオリジンはこれらだけをレート制限し、CloudFront 未キャッシュのものを要求すると `429` を返す（Safari で写真が軒並み「?」になった真因）。`url_l`（1024）以下は制限されない。1024px 超は派生サイズでは幅が足りない超縦長の写真だけに留める。検証は curl / Chrome ではなく WebKit で行う（制限の枠がクライアントごとに違う）。
+    - **長辺 1024px 超のサイズ（`url_h` / `url_k` / 原寸 `url_o`）を極力使わない** — Flickr のオリジンはこれらだけをレート制限し、CloudFront 未キャッシュのものを要求すると `429` を返す（Safari で写真が軒並み「?」になった真因）。`url_l`（1024）以下は制限されない。検証は curl / Chrome ではなく WebKit で行う（制限の枠がクライアントごとに違う）。
+    - **どうしても原寸が要る写真は自前で配信する** — 1024px 以下では幅が足りない超縦長の写真の原寸は [public/images/photos/](public/images/photos/) に置く。ファイル名は Flickr の原寸と同じ `<id>_<原寸の secret>_o.jpg`（名前が合えば `pickImageUrl()` が自動でそちらを使う。Flickr 側で画像を差し替えると secret が変わって合わなくなるので、古いコピーを出し続けない）。合うコピーが無い写真はビルド時に `WARNING` が出る。
     - **派生サイズは長辺基準で縮小される** — 縦長画像を長辺で選ぶと幅が足りなくなる（680×13600 → 長辺 1024px 版は 51×1024）。選択は必ず**幅**（`width_*`）で判定する。[fetchPhotos.ts](src/lib/fetchPhotos.ts) の `pickImageUrl()` を使う。
     - **`extras=description` を使わない** — `flickr.photos.getInfo` と値が食い違う（全文字間に U+200B が入る写真がある / 外部リンクの `rel` が異なる）。説明文は `getInfo` から取る。
 4. **HTML サニタイズは `sanitizeHtml.ts`** — 改行→`<br>` 変換、外部リンクへの `target="_blank"`/`rel` 付与、タグ除去は [src/lib/sanitizeHtml.ts](src/lib/sanitizeHtml.ts) を使う。コンポーネント内で重複実装しない。

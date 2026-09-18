@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.2.14] - 2026-09-18
+
+このリポジトリは同日に本番でなくなった（`www.sparebutton.jp` は vanilla 版が配信）。切り戻し先として vanilla 版と揃えておくための変更。
+
+### Changed
+
+- **原寸が要る 3 枚を自前配信に**（[public/images/photos/](public/images/photos/)、計約 6 MB）。680×13600 / 680×7705 のスクロールポスターと 680×1764 の 1 枚は、1024px 以下の派生サイズでは幅が足りず、0.2.12 でも Flickr の原寸 URL（レート制限の対象）に残していた。検証でもこの 3 枚だけが 429 で表示されないことがあった
+  - [fetchPhotos.ts](src/lib/fetchPhotos.ts) の `pickImageUrl()` は、原寸が必要な写真について `public/images/photos/` に Flickr の原寸と同じ名前（`<id>_<原寸の secret>_o.jpg`）のファイルがあればそれを使う。Flickr 側で画像を差し替えると secret が変わって名前が合わなくなるため、古いコピーを出し続けることがない
+  - 合うコピーが無い写真は従来どおり Flickr の原寸 URL を使い、ビルド時に `WARNING` でファイル名つきで知らせる
+  - 結果: 716 枚の内訳は `_z` 434 / `_b` 217 / `_c` 61 / 500px 1 / 自前配信 3。**Flickr の 1024px 超に頼る写真は 0 枚**
+
+### Verified
+
+- `yarn lint` 0 件、`tsc --noEmit` 通過、`yarn build` 成功（36 ページ。`.next/cache` の fetch キャッシュから組み立てられ、Flickr API は呼んでいない = ログに API エラー 0 件）
+- WebKit（WKWebView）で書き出し（`serve out`）を確認: `/72157659578261540` 3/3（680×13600 と 680×7705 が原寸でデコードされる）、`/72157660925233922` 58/58、`error` イベント 0 件
+
 ## [0.2.13] - 2026-09-18
 
 姉妹プロジェクト（vanilla 版）と書き出し結果を機械的に比較して見つかった 2 件。
