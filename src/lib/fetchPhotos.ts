@@ -16,13 +16,17 @@ if (!globalThis.__photosCache) {
 //
 // なお `description` も extras で取得できるが、`flickr.photos.getInfo` の値と一致しないため使わない
 // （全文字の間に U+200B が挿入される写真がある / 外部リンクの rel 属性が異なる）。
-const PHOTO_EXTRAS = "url_l,url_h,url_k,url_o";
+const PHOTO_EXTRAS = "url_m,url_z,url_c,url_l,url_o";
 
-// 記事の横幅は最大 640px（`max-w-screen-sm`）。Retina で 2 倍を確保するため 1280px を下限とする。
-const MIN_WIDTH = 1280;
+// 記事の横幅は最大 640px（`max-w-screen-sm`）
+const DISPLAY_WIDTH = 640;
 
-// Flickr の派生サイズ（長辺基準）を小さい順に並べたもの
-const SIZE_SUFFIXES = ["l", "h", "k"] as const; // 長辺 1024 / 1600 / 2048
+// 派生サイズの幅が「表示に必要な幅」のこの割合以上を保てるなら、原寸ではなく派生サイズを使う
+const MIN_WIDTH_RATIO = 0.8;
+
+// Flickr がレート制限しない派生サイズ（長辺 1024px 以下）を小さい順に並べたもの。
+// 長辺 1024px を超えるサイズ（`url_h` / `url_k` / `url_o` など）はここに足さないこと。
+const SAFE_SIZE_SUFFIXES = ["m", "z", "c", "l"] as const; // 長辺 500 / 640 / 800 / 1024
 
 // Flickr が返す写真 1 件（利用する項目のみ）
 type FlickrPhoto = {
@@ -31,26 +35,38 @@ type FlickrPhoto = {
     secret: string;
     url_o?: string;
     width_o?: string | number;
-} & Partial<Record<`url_${(typeof SIZE_SUFFIXES)[number]}`, string>> &
-    Partial<Record<`width_${(typeof SIZE_SUFFIXES)[number]}`, string | number>>;
+} & Partial<Record<`url_${(typeof SAFE_SIZE_SUFFIXES)[number]}`, string>> &
+    Partial<Record<`width_${(typeof SAFE_SIZE_SUFFIXES)[number]}`, string | number>>;
 
 /**
  * 表示に使う画像 URL を選ぶ。
  *
- * Flickr の派生サイズは**長辺**を基準に縮小されるため、縦長の写真では長辺で選ぶと幅が足りなくなる
- * （例: 680×13600 のスクロールポスターは長辺 1600px 版で 80×1600 になってしまう）。
- * そこで「幅が MIN_WIDTH 以上を保てる最小の派生サイズ」を選び、該当が無ければ原寸を使う。
- * 原寸より大きくなる選択はしないので、変更前より画質が落ちることはない。
+ * **長辺 1024px を超えるサイズ（`_h` / `_k` / 原寸 `_o`）は極力使わない。** Flickr のオリジンはこれらだけを
+ * レート制限しており、CloudFront のキャッシュに乗っていないものを要求すると `429 Too Many Requests` を返す。
+ * 1024px 以下のサイズは制限されない（同条件で `_z` / `_c` / `_b` は全て 200、`_h` / `_k` / `_o` は全て 429）。
+ * 1 ページに大サイズが数十枚あると、閲覧者の環境によっては大半が broken image になる。
+ *
+ * Flickr の派生サイズは**長辺**を基準に縮小されるため、縦長の写真ほど幅が狭くなる
+ * （例: 680×13600 のスクロールポスターは長辺 1024px 版で 51×1024 になってしまう）。
+ * そこで**幅**を基準に、制限されないサイズの中で最も幅の広いものを選び、それでも表示幅に対して
+ * 足りない超縦長の写真だけ原寸を使う（1 ページに数枚ならレート制限に掛かりにくい）。
+ *
+ * Flickr は拡大した派生サイズを作らないので、派生サイズが原寸より大きくなることはない。
  */
 function pickImageUrl(photo: FlickrPhoto): string {
-    const originalWidth = Number(photo.width_o) || 0;
-
-    for (const suffix of SIZE_SUFFIXES) {
+    // SAFE_SIZE_SUFFIXES が長辺の昇順なので、最後に見つかったものが最も幅が広い
+    let widest: { url: string; width: number } | undefined;
+    for (const suffix of SAFE_SIZE_SUFFIXES) {
         const url = photo[`url_${suffix}`];
         const width = Number(photo[`width_${suffix}`]) || 0;
-        if (url && width >= MIN_WIDTH && (!originalWidth || width < originalWidth)) {
-            return url;
-        }
+        if (url && width) widest = { url, width };
+    }
+
+    // 原寸が表示幅より狭い写真は、原寸の幅が出ていれば十分
+    const originalWidth = Number(photo.width_o) || DISPLAY_WIDTH;
+    const requiredWidth = Math.min(originalWidth, DISPLAY_WIDTH) * MIN_WIDTH_RATIO;
+    if (widest && (!photo.url_o || widest.width >= requiredWidth)) {
+        return widest.url;
     }
 
     return photo.url_o || "/images/no-image.svg";

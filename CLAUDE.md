@@ -24,8 +24,9 @@
 1. **SSG 専用構成** — [next.config.ts](next.config.ts) で `output: "export"` 固定。サーバーサイド機能（Route Handlers の動的レスポンス・`revalidate` 等）は使えない。Flickr API 呼び出しは**全てビルド時**に行う前提で書く。
 2. **データ取得は `src/lib/` に集約** — 旧 `hooks/useFetch*` は [src/lib/fetchAlbums.ts](src/lib/fetchAlbums.ts) / [src/lib/fetchPhotos.ts](src/lib/fetchPhotos.ts) に移動済み。React Hook ではなく純粋な非同期関数なので `use` プレフィックスを付けない。
 3. **Flickr API URL は共通ヘルパー経由** — [src/lib/flickrApi.ts](src/lib/flickrApi.ts) の `buildFlickrUrl` を使い、エンドポイント・キー・形式パラメータの直書きを避ける。
-    - **画像 URL は組み立てない** — Flickr はサイズごとに secret が異なるため、`extras` で受け取った `url_o` / `url_l` / `url_h` / `url_k` をそのまま使う。
-    - **派生サイズは長辺基準で縮小される** — 縦長画像を長辺で選ぶと幅が足りなくなる（680×13600 → 長辺 1600px 版は 80×1600）。選択は必ず**幅**（`width_*`）で判定する。[fetchPhotos.ts](src/lib/fetchPhotos.ts) の `pickImageUrl()` を使う。
+    - **画像 URL は組み立てない** — Flickr はサイズごとに secret が異なるため、`extras` で受け取った `url_*` をそのまま使う。
+    - **長辺 1024px 超のサイズ（`url_h` / `url_k` / 原寸 `url_o`）を極力使わない** — Flickr のオリジンはこれらだけをレート制限し、CloudFront 未キャッシュのものを要求すると `429` を返す（Safari で写真が軒並み「?」になった真因）。`url_l`（1024）以下は制限されない。1024px 超は派生サイズでは幅が足りない超縦長の写真だけに留める。検証は curl / Chrome ではなく WebKit で行う（制限の枠がクライアントごとに違う）。
+    - **派生サイズは長辺基準で縮小される** — 縦長画像を長辺で選ぶと幅が足りなくなる（680×13600 → 長辺 1024px 版は 51×1024）。選択は必ず**幅**（`width_*`）で判定する。[fetchPhotos.ts](src/lib/fetchPhotos.ts) の `pickImageUrl()` を使う。
     - **`extras=description` を使わない** — `flickr.photos.getInfo` と値が食い違う（全文字間に U+200B が入る写真がある / 外部リンクの `rel` が異なる）。説明文は `getInfo` から取る。
 4. **HTML サニタイズは `sanitizeHtml.ts`** — 改行→`<br>` 変換、外部リンクへの `target="_blank"`/`rel` 付与、タグ除去は [src/lib/sanitizeHtml.ts](src/lib/sanitizeHtml.ts) を使う。コンポーネント内で重複実装しない。
 5. **Tailwind CSS v4 の新構文に従う**
@@ -37,7 +38,7 @@
 8. **要素の可視性を JS やイベントに依存させない** — [src/components/ui/ImageFadein.tsx](src/components/ui/ImageFadein.tsx) で `opacity-0` が静的 HTML に焼き込まれ、ハイドレーション未完了・JS 取得失敗時に画像が透明のまま残る不具合が発生済み。完全 SSG なので **JS が動かなくても中身が見える初期状態**にし、演出はマウント後に足す。`opacity-0` / `invisible` / `h-0` 等を初期 state で描画していないか確認する。
     - マウント後も同様。**「隠しておいてイベントで戻す」を書かない**（イベントを取りこぼすと戻らず、リロードするまで消えたままになる）。「常に見える状態に、演出だけを一度足す」形にする。`onLoad` で `opacity-0` → `opacity-100` に戻す実装が典型的な NG 例で、代わりに `load` 時に `animate-fade-in` を一度当てる。
     - React の `onLoad` は**ハイドレーション前に発火した `load` を取りこぼす**。画像の読み込み完了を見るときは `img.complete` の確認か DOM の `load` の直接購読を使う。
-    - **画像のロード失敗の回収は [src/components/ui/ImageLoadRetry.tsx](src/components/ui/ImageLoadRetry.tsx) が document 全体で行う**（iOS の WebKit は一時失敗を自動リトライせず broken image で確定させるため）。コンポーネント単位でリトライを重複実装しない。
+    - **画像のロード失敗の回収は [src/components/ui/ImageLoadRetry.tsx](src/components/ui/ImageLoadRetry.tsx) が document 全体で行う**（WebKit は失敗を自動リトライせず broken image で確定させるため）。コンポーネント単位でリトライを重複実装しない。ただし `429` はリトライでは回収できない（制限中に再要求するだけ）ので、画像が出ないときはまずステータスコードを確認する。
 
 ---
 
